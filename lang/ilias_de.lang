@@ -1,0 +1,61 @@
+ModDashboard – SPDX-FileCopyrightText: 2026 Peter Reichartz · SPDX-License-Identifier: GPL-3.0-only
+<!-- language file start -->
+greeting_morning#:#Guten Morgen
+greeting_day#:#Hallo
+greeting_evening#:#Guten Abend
+lead_back#:#Schön, dass du wieder da bist.
+lead_back_formal#:#Schön, dass Sie wieder da sind.
+lead_new#:#Such dir einen Kurs aus und leg los.
+lead_new_formal#:#Wählen Sie einen Kurs aus und legen Sie los.
+week_one#:#%d Lerneinheit in den letzten 7 Tagen abgeschlossen
+week_many#:#%d Lerneinheiten in den letzten 7 Tagen abgeschlossen
+due_next#:#Als Nächstes fällig:
+quick_links#:#Schnellzugriff
+quick_courses#:#Meine Kurse
+quick_calendar#:#Kalender
+quick_progress#:#Lernfortschritt
+quick_repository#:#Alle Kurse
+continue#:#Weitermachen
+resume#:#Fortsetzen
+recent_also#:#Zuletzt angesehen
+type_in_container#:#%s in %s
+lp_in_progress#:#Angefangen
+lp_percent#:#%d %% erledigt
+lp_completed#:#Abgeschlossen
+rel_today#:#heute
+rel_yesterday#:#gestern
+rel_tomorrow#:#morgen
+rel_days_ago#:#vor %d Tagen
+rel_in_days#:#in %d Tagen
+start#:#Dein Start
+start_formal#:#Ihr Start
+empty#:#Hier erscheint, woran du zuletzt gearbeitet hast. Noch ist nichts da.
+empty_formal#:#Hier erscheint, woran Sie zuletzt gearbeitet haben. Noch ist nichts da.
+cfg_address#:#Anrede
+cfg_opt_du#:#Du
+cfg_opt_sie#:#Sie
+cfg_roles#:#Globale Rollen
+cfg_roles_info#:#Mehrfachauswahl möglich.
+cfg_sections#:#Bereiche
+cfg_sections_info#:#Abgewählte Bereiche werden nicht angezeigt. „Zuletzt angesehen“ zeigt die Lernhistorie – bei Rollen, die ihr Dashboard präsentieren (z. B. Lehrende), abwählen oder die Rolle ausschließen.
+cfg_opt_deadline#:#Nächste Frist (aus den To-Dos)
+cfg_opt_recent#:#Zuletzt angesehen
+cfg_opt_progress#:#Lernfortschritt (Fortschritt beim Weitermachen, Wochenbilanz)
+cfg_quick#:#Schnellzugriffe
+cfg_quick_info#:#Erscheinen nur, wenn die Funktion in der Installation aktiv ist.
+cfg_q_courses#:#Meine Kurse (Sprung zum Block auf dem Dashboard)
+cfg_q_calendar#:#Kalender
+cfg_q_repository#:#Alle Kurse (Magazin)
+cfg_custom#:#Eigene Links
+cfg_custom_info#:#Eine Zeile je Link: Titel | URL | Icon (optional). Höchstens %d Links. URL relativ oder mit http(s)://. Icons: %s
+cfg_custom_invalid#:#Ungültige Zeile(n): %s. Format: Titel | URL | Icon
+cfg_q_progress#:#Lernfortschritt
+cfg_local_roles#:#Lokale Rollen
+cfg_local_roles_info#:#Rollen aus Kursen, Gruppen oder Kategorien, z. B. Kursmitglieder. Ab zwei Zeichen suchen (Rollen- oder Kurstitel), mehrere möglich. Globale und lokale Rollen werden kombiniert: Eine Zugehörigkeit genügt.
+cfg_hide_title#:#Seitentitel ausblenden
+cfg_hide_title_info#:#Blendet den Seitentitel „Dashboard“ visuell aus (für Screenreader bleibt er erhalten); die Begrüßung übernimmt. Abschalten, wenn der Skin den Kopfbereich selbst gestaltet.
+cfg_sec_audience#:#Zielgruppe
+cfg_sec_audience_info#:#Wer den Willkommensbereich sieht. Ohne Auswahl sehen ihn alle angemeldeten Nutzer.
+cfg_sec_look#:#Ansprache und Darstellung
+cfg_sec_content#:#Inhalte
+cfg_sec_quick#:#Schnellzugriff
