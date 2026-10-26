@@ -1,0 +1,61 @@
+ModDashboard – SPDX-FileCopyrightText: 2026 Peter Reichartz · SPDX-License-Identifier: GPL-3.0-only
+<!-- language file start -->
+greeting_morning#:#Good morning
+greeting_day#:#Hello
+greeting_evening#:#Good evening
+lead_back#:#Good to see you again.
+lead_back_formal#:#Good to see you again.
+lead_new#:#Choose a course and get started.
+lead_new_formal#:#Choose a course and get started.
+week_one#:#%d learning unit completed in the last 7 days
+week_many#:#%d learning units completed in the last 7 days
+due_next#:#Due next:
+quick_links#:#Quick access
+quick_courses#:#My courses
+quick_calendar#:#Calendar
+quick_progress#:#Learning progress
+quick_repository#:#All courses
+continue#:#Continue
+resume#:#Resume
+recent_also#:#Recently viewed
+type_in_container#:#%s in %s
+lp_in_progress#:#Started
+lp_percent#:#%d %% done
+lp_completed#:#Completed
+rel_today#:#today
+rel_yesterday#:#yesterday
+rel_tomorrow#:#tomorrow
+rel_days_ago#:#%d days ago
+rel_in_days#:#in %d days
+start#:#Getting started
+start_formal#:#Getting started
+empty#:#This is where you will find what you worked on last. Nothing here yet.
+empty_formal#:#This is where you will find what you worked on last. Nothing here yet.
+cfg_address#:#Form of address (German)
+cfg_opt_du#:#Informal (du)
+cfg_opt_sie#:#Formal (Sie)
+cfg_roles#:#Global roles
+cfg_roles_info#:#Multiple selection possible.
+cfg_sections#:#Sections
+cfg_sections_info#:#Deselected sections are not shown. "Recently viewed" shows the learning history – deselect it or exclude roles that present their dashboard (e.g. teachers).
+cfg_opt_deadline#:#Next deadline (from to-dos)
+cfg_opt_recent#:#Recently viewed
+cfg_opt_progress#:#Learning progress (progress on Continue, weekly summary)
+cfg_quick#:#Quick access
+cfg_quick_info#:#Only shown if the feature is active in this installation.
+cfg_q_courses#:#My courses (jump to the dashboard block)
+cfg_q_calendar#:#Calendar
+cfg_q_repository#:#All courses (repository)
+cfg_custom#:#Custom links
+cfg_custom_info#:#One line per link: Title | URL | Icon (optional). At most %d links. URL relative or starting with http(s)://. Icons: %s
+cfg_custom_invalid#:#Invalid line(s): %s. Format: Title | URL | Icon
+cfg_q_progress#:#Learning progress
+cfg_local_roles#:#Local roles
+cfg_local_roles_info#:#Roles of courses, groups or categories, e.g. course members. Type at least two characters (role or course title); several allowed. Global and local roles are combined: one membership is enough.
+cfg_hide_title#:#Hide page title
+cfg_hide_title_info#:#Visually hides the page title “Dashboard” (kept for screen readers); the greeting takes over. Turn off if your skin styles the header itself.
+cfg_sec_audience#:#Audience
+cfg_sec_audience_info#:#Who sees the welcome area. Without a selection, all logged-in users see it.
+cfg_sec_look#:#Tone and appearance
+cfg_sec_content#:#Content
+cfg_sec_quick#:#Quick access

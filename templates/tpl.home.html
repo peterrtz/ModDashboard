@@ -1,0 +1,53 @@
+<section class="mdash{HIDE_TITLE}" aria-labelledby="mdash-greeting">
+	<div class="mdash__hero">
+		<div class="mdash__intro">
+			<!-- BEGIN date -->
+			<p class="mdash__date">{DAY_ICON}<span>{DATE}</span></p>
+			<!-- END date -->
+			<h2 id="mdash-greeting" class="mdash__greeting">{GREETING}</h2>
+			<p class="mdash__lead">{LEAD}</p>
+			<!-- BEGIN week -->
+			<p class="mdash__week">{WEEK_ICON}<span>{WEEK}</span></p>
+			<!-- END week -->
+			<!-- BEGIN deadline -->
+			<a class="mdash__due{DUE_CLASS}" href="{D_HREF}">{DUE_ICON}<span class="mdash__due-text"><span class="mdash__due-label">{TXT_DUE}</span> <span class="mdash__due-title">{D_TITLE}</span> <span class="mdash__due-when">{D_WHEN}</span></span></a>
+			<!-- END deadline -->
+		</div>
+		<div class="mdash__panel">
+			<!-- BEGIN continue -->
+			<h3 class="mdash__label">{TXT_CONTINUE}</h3>
+			<a class="mdash__resume" href="{C_HREF}">
+				<img class="mdash__type" src="{C_ICON}" alt="">
+				<span class="mdash__resume-text">
+					<span class="mdash__resume-title">{C_TITLE}</span>
+					<span class="mdash__resume-meta">{C_META}<!-- BEGIN c_when --><span aria-hidden="true"> · </span><span class="mdash__nowrap">{C_WHEN}</span><!-- END c_when --></span>
+					<!-- BEGIN c_progress -->
+					<span class="mdash__progress"><!-- BEGIN c_bar --><span class="mdash__bar" aria-hidden="true"><span style="width:{C_PCT}%"></span></span><!-- END c_bar --><span>{C_PROGRESS}</span></span>
+					<!-- END c_progress -->
+				</span>
+				<span class="mdash__resume-go">{PLAY_ICON}<span>{TXT_RESUME}</span></span>
+			</a>
+			<!-- BEGIN more_list -->
+			<h4 class="mdash__label mdash__label--small">{TXT_ALSO}</h4>
+			<ul class="mdash__recent">
+				<!-- BEGIN more -->
+				<li><a href="{M_HREF}"><img class="mdash__type" src="{M_ICON}" alt=""><span class="mdash__recent-title"><span class="mdash__sr">{M_TYPE}: </span>{M_TITLE}</span><span class="mdash__when">{M_WHEN}</span></a></li>
+				<!-- END more -->
+			</ul>
+			<!-- END more_list -->
+			<!-- END continue -->
+			<!-- BEGIN empty -->
+			<h3 class="mdash__label">{TXT_START}</h3>
+			<p class="mdash__empty">{TXT_EMPTY}</p>
+			<a class="mdash__button" href="{E_HREF}">{E_ICON}<span>{TXT_DISCOVER}</span></a>
+			<!-- END empty -->
+		</div>
+		<!-- BEGIN quick_nav -->
+		<nav class="mdash__quick" aria-label="{TXT_QUICK}">
+			<!-- BEGIN quick -->
+			<a class="mdash__quick-link" href="{Q_HREF}">{Q_ICON}<span>{Q_LABEL}</span></a>
+			<!-- END quick -->
+		</nav>
+		<!-- END quick_nav -->
+	</div>
+</section>

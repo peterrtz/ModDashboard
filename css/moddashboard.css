@@ -1,0 +1,275 @@
+/* SPDX-FileCopyrightText: 2026 Peter Reichartz
+   SPDX-License-Identifier: GPL-3.0-only */
+
+/* ModDashboard – Willkommensbereich auf dem Dashboard.
+
+   Farben und Schrift sind Custom Properties. Die Standardwerte sind bewusst
+   neutral (Delos-Blau) und stehen in :where(:root) mit Spezifität 0 – ein Skin
+   überschreibt sie mit einem einfachen :root { … }, unabhängig von der Ladereihenfolge. */
+:where(:root) {
+	--mdash-hero-1: #4C6586;     /* Verlauf Kopfbereich, Weiß darauf ≥ 5,9:1 */
+	--mdash-hero-2: #2F425C;
+	--mdash-hero-3: #1F2D40;
+	--mdash-accent: #3A5677;     /* Buttons, Fortschritt; Weiß darauf 7,6:1 */
+	--mdash-accent-dark: #2F425C;
+	--mdash-urgent: #F2C14E;     /* Kante bei Fristen < 48 h (Fläche, kein Text) */
+	--mdash-ink: #161616;
+	--mdash-muted: #575757;      /* 7,1:1 auf Weiß */
+	--mdash-surface: #fff;
+	--mdash-soft: #EEF2F6;
+	--mdash-line: #E3E6EA;
+	--mdash-track: #B8C2CE;     /* Leerer Teil des Fortschrittsbalkens – auf --mdash-soft noch erkennbar */
+	--mdash-focus: #0078D7;
+	--mdash-heading: inherit;
+}
+
+.mdash {
+	container-type: inline-size;
+	margin: 0 0 2rem;
+	hyphens: manual; /* Skins mit automatischer Silbentrennung: in Titeln und Begrüßung störend */
+}
+
+/* Den Seitentitel "Dashboard" nur noch für Screenreader – die Begrüßung übernimmt
+   (abschaltbar in der Konfiguration: „Seitentitel ausblenden“).
+   moddashboard.css lädt VOR dem Skin (delos.css). Deshalb eine Stufe spezifischer als übliche
+   Skin-Regeln und Abstände explizit auf 0 – sonst bleibt bei Skins, die den Kopfbereich
+   gestalten, eine unsichtbare Lücke über dem Willkommensbereich. */
+main.il-layout-page-content:has(section.mdash--hide-title) div.il_HeaderInner,
+.mdash__sr {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+.mdash__icon { width: 1.25em; height: 1.25em; flex: none; }
+.mdash a:focus-visible { outline: 3px solid var(--mdash-focus); outline-offset: 2px; }
+.mdash__nowrap { white-space: nowrap; }
+
+/* ---------- Kopfbereich ---------- */
+.mdash__hero {
+	position: relative;
+	display: grid;
+	grid-template-areas: "intro" "panel" "quick";
+	gap: 1rem;
+	padding: 1.25rem 1rem;
+	color: #fff;
+	background: linear-gradient(120deg, var(--mdash-hero-1) 0%, var(--mdash-hero-2) 58%, var(--mdash-hero-3) 100%);
+	overflow: hidden;
+}
+/* Zwei schräge Lichtflächen – Tiefe ohne Bild */
+.mdash__hero::before,
+.mdash__hero::after {
+	content: "";
+	position: absolute;
+	top: -30%;
+	height: 160%;
+	background: rgba(255, 255, 255, .07);
+	transform: skewX(-18deg);
+	pointer-events: none;
+}
+.mdash__hero::before { right: 18%; width: 9%; }
+.mdash__hero::after { right: -6%; width: 22%; }
+.mdash__hero > * { position: relative; z-index: 1; }
+.mdash__intro { grid-area: intro; }
+.mdash__panel { grid-area: panel; }
+.mdash__quick { grid-area: quick; }
+
+.mdash__date,
+.mdash__week {
+	display: flex;
+	align-items: center;
+	gap: .5rem;
+	margin: 0 0 .375rem;
+	font-size: .9375rem;
+}
+.mdash__week { margin: .75rem 0 0; font-weight: 600; }
+.mdash__greeting {
+	margin: 0;
+	color: inherit;
+	font-family: var(--mdash-heading);
+	font-size: clamp(1.625rem, 5cqi, 2.625rem);
+	font-weight: 600;
+	line-height: 1.1;
+}
+.mdash__lead { margin: .5rem 0 0; font-size: 1.0625rem; line-height: 1.45; }
+
+/* ---------- Nächste Frist ---------- */
+.mdash__due {
+	display: flex;
+	align-items: flex-start;
+	gap: .625rem;
+	max-width: 34rem;
+	margin-top: 1rem;
+	padding: .625rem .875rem;
+	color: #fff;
+	background: rgba(0, 0, 0, .18);
+	border-left: 4px solid rgba(255, 255, 255, .55);
+	text-decoration: none;
+	line-height: 1.35;
+}
+.mdash__due--soon { border-left-color: var(--mdash-urgent); }
+.mdash__due .mdash__icon { width: 1.375rem; height: 1.375rem; margin-top: .05rem; }
+.mdash__due-label { font-size: .875rem; }
+.mdash__due-title { font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+.mdash__due-when { display: block; font-size: .875rem; opacity: .92; }
+.mdash__due:hover { color: #fff; background: rgba(0, 0, 0, .28); }
+.mdash .mdash__due:focus-visible { outline-color: #fff; }
+
+/* ---------- Schnellzugriff ---------- */
+.mdash__quick {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+	gap: .5rem;
+}
+.mdash__quick-link {
+	display: flex;
+	align-items: center;
+	gap: .625rem;
+	min-height: 2.75rem;
+	padding: .5rem .75rem;
+	color: #fff;
+	background: rgba(255, 255, 255, .12);
+	border: 1px solid rgba(255, 255, 255, .28);
+	font-weight: 600;
+	line-height: 1.2;
+	text-decoration: none;
+}
+.mdash__quick-link .mdash__icon { width: 1.375rem; height: 1.375rem; }
+.mdash__quick-link:hover,
+.mdash__quick-link:focus-visible {
+	color: var(--mdash-hero-2);
+	background: #fff;
+	text-decoration: none;
+}
+.mdash .mdash__quick-link:focus-visible { outline-color: #fff; }
+
+/* ---------- Weitermachen ---------- */
+.mdash__panel {
+	align-self: start;
+	padding: 1rem;
+	color: var(--mdash-ink);
+	background: var(--mdash-surface);
+	box-shadow: 0 10px 30px rgba(10, 15, 25, .25);
+}
+.mdash__label {
+	margin: 0 0 .625rem;
+	font-family: inherit;
+	font-size: .875rem;
+	font-weight: 600;
+	color: var(--mdash-muted);
+}
+.mdash__label--small { margin: 1rem 0 .25rem; }
+
+.mdash__resume {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: .625rem .875rem;
+	align-items: start;
+	padding: .875rem;
+	color: inherit;
+	background: var(--mdash-soft);
+	text-decoration: none;
+}
+.mdash__resume:hover { color: inherit; text-decoration: none; }
+.mdash__resume:hover .mdash__resume-title { text-decoration: underline; }
+.mdash__type { width: 2rem; height: 2rem; }
+.mdash__resume-text { display: grid; gap: .2rem; min-width: 0; }
+.mdash__resume-title {
+	font-family: var(--mdash-heading);
+	font-size: 1.1875rem;
+	font-weight: 600;
+	line-height: 1.25;
+	overflow-wrap: anywhere;
+}
+.mdash__resume-meta { font-size: .875rem; color: var(--mdash-muted); }
+
+.mdash__progress { display: flex; align-items: center; gap: .5rem; margin-top: .25rem; font-size: .875rem; color: var(--mdash-ink); }
+.mdash__bar { flex: 0 1 8rem; height: .375rem; background: var(--mdash-track); overflow: hidden; }
+.mdash__bar > span { display: block; height: 100%; background: var(--mdash-accent); }
+
+.mdash__resume-go,
+.mdash__button {
+	grid-column: 1 / -1;
+	justify-self: start;
+	display: inline-flex;
+	align-items: center;
+	gap: .5rem;
+	min-height: 2.5rem;
+	padding: .5rem 1.1rem;
+	color: #fff;
+	background: var(--mdash-accent);
+	font-weight: 600;
+}
+.mdash__resume:hover .mdash__resume-go,
+.mdash__button:hover { background: var(--mdash-accent-dark); }
+
+.mdash__recent { margin: 0; padding: 0; list-style: none; }
+.mdash__recent a {
+	display: flex;
+	align-items: center;
+	gap: .625rem;
+	min-height: 2.25rem;
+	padding: .375rem 0;
+	color: var(--mdash-ink);
+	border-top: 1px solid var(--mdash-line);
+	text-decoration: none;
+}
+.mdash__recent li:first-child a { border-top: 0; }
+.mdash__recent a:hover .mdash__recent-title { text-decoration: underline; }
+.mdash__recent .mdash__type { width: 1.25rem; height: 1.25rem; }
+.mdash__recent-title { flex: 1; min-width: 0; }
+.mdash__when { flex: none; font-size: .8125rem; color: var(--mdash-muted); }
+
+.mdash__empty { margin: 0 0 1rem; color: var(--mdash-muted); line-height: 1.5; }
+.mdash__button { text-decoration: none; }
+.mdash__button:hover { color: #fff; text-decoration: none; }
+
+/* ---------- Schmal (Handy): Kurse sollen ohne Scrollen anlaufen ----------
+   „Zuletzt angesehen“ entfällt – „Weitermachen“ deckt den Wiedereinstieg ab,
+   die Kurse stehen direkt darunter. Schnellzugriffe als kompakte Kacheln. */
+@container (max-width: 34rem) {
+	.mdash__hero { gap: .75rem; padding: 1rem .875rem; }
+	.mdash__lead { font-size: 1rem; }
+	.mdash__due { margin-top: .75rem; padding: .5rem .75rem; }
+	.mdash__panel { padding: .875rem; }
+	.mdash__resume { padding: .75rem; gap: .5rem .75rem; }
+	.mdash__label--small,
+	.mdash__recent { display: none; }
+	.mdash__quick { grid-template-columns: repeat(auto-fit, minmax(6.25rem, 1fr)); gap: .375rem; /* 3 Spalten auf 390 px – „Lernfortschritt“ passt ohne Überlauf */ }
+	.mdash__quick-link {
+		flex-direction: column;
+		justify-content: center;
+		gap: .25rem;
+		min-height: 3.5rem;
+		padding: .5rem .25rem;
+		font-size: .8125rem;
+		text-align: center;
+	}
+}
+
+/* ---------- Breit: Begrüßung | Weitermachen, Schnellzugriff als volle Zeile ---------- */
+@container (min-width: 46rem) {
+	.mdash__hero {
+		grid-template-columns: minmax(0, 1.3fr) minmax(17rem, 1fr);
+		grid-template-areas: "intro panel" "quick quick";
+		align-items: center;
+		gap: 1.75rem 2.25rem;
+		padding: 2.25rem 2.25rem 2rem;
+	}
+	.mdash__panel { padding: 1.25rem; }
+	.mdash__quick { grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: .625rem; }
+	.mdash__quick-link { min-height: 3rem; padding: .625rem .875rem; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.mdash__quick-link,
+	.mdash__due,
+	.mdash__resume-go,
+	.mdash__button { transition: background-color .15s ease-out, color .15s ease-out; }
+}
