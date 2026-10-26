@@ -36,6 +36,9 @@ class ilModDashboardConfigGUI extends ilPluginConfigGUI
                 $pl->setConf('hide_title', (bool) $data['look']['hide_title']);
                 $pl->setConf('roles', array_map('intval', $data['audience']['roles'] ?? []));
                 $pl->setConf('local_roles', $pl->localRoleIds((array) ($data['audience']['local_roles'] ?? [])));
+                [$mode, $colors] = $data['look']['colors'];
+                $pl->setConf('colors', ['mode' => $mode === 'custom' ? 'custom' : 'design']
+                    + ($mode === 'custom' ? ilModDashboardPlugin::normalizeColors((array) $colors) : (array) $pl->conf('colors')));
                 $pl->setConf('sections', array_values($data['content']['sections'] ?? []));
                 $pl->setConf('quick', array_values($data['quick']['quick'] ?? []));
                 $pl->setConf('custom', trim((string) $data['quick']['custom']));
@@ -94,6 +97,21 @@ class ilModDashboardConfigGUI extends ilPluginConfigGUI
         )))->acquireParameter(['moddash'], 'term');
         $local = array_map(fn(int $id) => $pl->localRoleLabel($id), (array) $pl->conf('local_roles'));
 
+        // Farben: aus dem Design (Skin) oder eigene Werte; eigene Werte werden auf Format und Kontrast geprüft
+        $colors = (array) $pl->conf('colors') + ilModDashboardPlugin::COLOR_DEFAULTS;
+        $color_check = $DIC->refinery()->custom()->constraint(
+            fn($v) => !is_array($v) || ($v[0] ?? '') !== 'custom' || ilModDashboardPlugin::colorProblems(ilModDashboardPlugin::normalizeColors((array) ($v[1] ?? []))) === [],
+            fn($txt, $v) => implode(' ', array_map(
+                fn($k) => $pl->txt($k),
+                ilModDashboardPlugin::colorProblems(ilModDashboardPlugin::normalizeColors((array) ($v[1] ?? [])))
+            ))
+        );
+        $pickers = [];
+        foreach (array_keys(ilModDashboardPlugin::COLOR_DEFAULTS) as $k) {
+            $pickers[$k] = $f->colorSelect($pl->txt('cfg_color_' . $k), $pl->txt('cfg_color_' . $k . '_info'))
+                ->withValue((string) $colors[$k]);
+        }
+
         $custom_check = $DIC->refinery()->custom()->constraint(
             fn($v) => $pl->invalidCustomLines((string) $v) === [],
             fn($txt, $v) => sprintf($pl->txt('cfg_custom_invalid'), implode(', ', $pl->invalidCustomLines((string) $v)))
@@ -121,6 +139,12 @@ class ilModDashboardConfigGUI extends ilPluginConfigGUI
                         ->withValue((string) $pl->conf('address')),
                     'hide_title' => $f->checkbox($pl->txt('cfg_hide_title'), $pl->txt('cfg_hide_title_info'))
                         ->withValue((bool) $pl->conf('hide_title')),
+                    'colors' => $f->switchableGroup([
+                        'design' => $f->group([], $pl->txt('cfg_colors_design'), $pl->txt('cfg_colors_design_info')),
+                        'custom' => $f->group($pickers, $pl->txt('cfg_colors_custom'), $pl->txt('cfg_colors_custom_info')),
+                    ], $pl->txt('cfg_colors'))
+                        ->withValue(($colors['mode'] ?? 'design') === 'custom' ? 'custom' : 'design')
+                        ->withAdditionalTransformation($color_check),
                 ], $pl->txt('cfg_sec_look')),
                 'content' => $f->section([
                     'sections' => $f->multiSelect($pl->txt('cfg_sections'), $opts('cfg_opt_', ['deadline', 'recent', 'progress']), $pl->txt('cfg_sections_info'))

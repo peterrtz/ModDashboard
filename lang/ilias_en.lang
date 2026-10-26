@@ -59,3 +59,20 @@ cfg_sec_audience_info#:#Who sees the welcome area. Without a selection, all logg
 cfg_sec_look#:#Tone and appearance
 cfg_sec_content#:#Content
 cfg_sec_quick#:#Quick access
+cfg_colors#:#Colours
+cfg_colors_design#:#Take from the design
+cfg_colors_design_info#:#Colours from the active skin (variables --mdash-*); neutral defaults if the skin sets none. Recommended if you maintain your own skin.
+cfg_colors_custom#:#Custom colours
+cfg_colors_custom_info#:#Overrides the skin colours in the welcome area only. Darker shades for gradient and hover are derived. White text needs at least 4.5:1 contrast on header and accent.
+cfg_color_base#:#Header
+cfg_color_base_info#:#Base colour of the gradient; white text on top.
+cfg_color_accent#:#Accent
+cfg_color_accent_info#:#"Continue" button and progress bar; white text on top.
+cfg_color_urgent#:#Deadline marker
+cfg_color_urgent_info#:#Edge for deadlines within 48 hours (area only, no text).
+cfg_color_soft#:#"Continue" background
+cfg_color_soft_info#:#Light background of the continue box; dark text on top.
+cfg_color_invalid#:#Please enter colours as #RRGGBB.
+cfg_color_low_base#:#Header is too light for white text (below 4.5:1).
+cfg_color_low_accent#:#Accent is too light for white text (below 4.5:1).
+cfg_color_low_soft#:#"Continue" background is too dark for dark text (below 4.5:1).
