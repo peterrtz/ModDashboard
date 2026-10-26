@@ -20,6 +20,14 @@ class ilModDashboardPlugin extends ilUserInterfaceHookPlugin
     ];
     public const MAX_CUSTOM_LINKS = 4;
 
+    /** Eigene Farben (nur #RRGGBB); weitere Töne werden daraus abgeleitet */
+    public const COLOR_DEFAULTS = [
+        'base' => '#4C6586',    // Kopfbereich, Verlauf wird abgedunkelt
+        'accent' => '#3A5677',  // Buttons und Fortschritt
+        'urgent' => '#F2C14E',  // Kante bei Fristen unter 48 Stunden
+        'soft' => '#EEF2F6',    // Hintergrund „Weitermachen“
+    ];
+
     /**
      * Eigene Icon-Bibliothek: SVG-Dateien in diesem Unterordner ergänzen die mitgelieferten Icons
      * oder ersetzen sie bei gleichem Namen. Alles wird lokal ausgeliefert (inline), es entsteht
@@ -43,6 +51,7 @@ class ilModDashboardPlugin extends ilUserInterfaceHookPlugin
         'roles' => [],                                       // globale Rollen; leer (und keine lokalen) = alle
         'local_roles' => [],                                 // lokale Rollen (obj_id), z. B. Kursmitglieder
         'hide_title' => true,                                // Seitentitel „Dashboard“ visuell ausblenden
+        'colors' => ['mode' => 'design'] + self::COLOR_DEFAULTS, // design = Skin bzw. neutrale Standardwerte
         'sections' => ['recent', 'deadline', 'progress'],
         'quick' => ['calendar', 'progress', 'repository'],   // 'courses' ist optional
         'custom' => '',                                      // "Titel | URL | Icon" je Zeile
@@ -257,6 +266,92 @@ class ilModDashboardPlugin extends ilUserInterfaceHookPlugin
             }
         }
         return array_values(array_unique($ids));
+    }
+
+    /**
+     * Farbwerte aus dem Formular (ILIAS\Data\Color oder Text) als #RRGGBB.
+     * @param array<string,mixed> $values
+     * @return array<string,string>
+     */
+    public static function normalizeColors(array $values): array
+    {
+        $out = [];
+        foreach (array_keys(self::COLOR_DEFAULTS) as $k) {
+            $v = $values[$k] ?? '';
+            $out[$k] = strtoupper(is_object($v) && method_exists($v, 'asHex') ? (string) $v->asHex() : (string) $v);
+        }
+        return $out;
+    }
+
+    public static function isHexColor(mixed $v): bool
+    {
+        return is_string($v) && preg_match('/^#[0-9a-fA-F]{6}$/', $v) === 1;
+    }
+
+    /** Kontrastverhältnis nach WCAG 2.x */
+    public static function contrast(string $a, string $b): float
+    {
+        $lum = static function (string $hex): float {
+            $c = array_map(static function (string $p): float {
+                $v = hexdec($p) / 255;
+                return $v <= 0.03928 ? $v / 12.92 : (($v + 0.055) / 1.055) ** 2.4;
+            }, str_split(substr($hex, 1), 2));
+            return 0.2126 * $c[0] + 0.7152 * $c[1] + 0.0722 * $c[2];
+        };
+        [$l1, $l2] = [$lum($a), $lum($b)];
+        return (max($l1, $l2) + 0.05) / (min($l1, $l2) + 0.05);
+    }
+
+    /** Farbe mit Schwarz (amount > 0) mischen */
+    public static function shade(string $hex, float $amount): string
+    {
+        return '#' . implode('', array_map(
+            static fn(string $p): string => sprintf('%02X', (int) round(hexdec($p) * (1 - $amount))),
+            str_split(substr($hex, 1), 2)
+        ));
+    }
+
+    /**
+     * Prüft eigene Farben auf Format und Lesbarkeit (WCAG AA, 4,5:1).
+     * @param array<string,mixed> $c
+     * @return list<string> Sprachvariablen der Probleme
+     */
+    public static function colorProblems(array $c): array
+    {
+        foreach (array_keys(self::COLOR_DEFAULTS) as $k) {
+            if (!self::isHexColor($c[$k] ?? null)) {
+                return ['cfg_color_invalid'];
+            }
+        }
+        $p = [];
+        if (self::contrast('#FFFFFF', $c['base']) < 4.5) {
+            $p[] = 'cfg_color_low_base';
+        }
+        if (self::contrast('#FFFFFF', $c['accent']) < 4.5) {
+            $p[] = 'cfg_color_low_accent';
+        }
+        if (self::contrast('#161616', $c['soft']) < 4.5) {
+            $p[] = 'cfg_color_low_soft';
+        }
+        return $p;
+    }
+
+    /**
+     * Custom Properties für das style-Attribut des Willkommensbereichs, '' im Modus „Aus dem Design“.
+     * Nur geprüfte #RRGGBB-Werte – keine freie CSS-Eingabe, daher keine Möglichkeit, Code einzuschleusen.
+     */
+    public function colorStyle(): string
+    {
+        $c = (array) $this->conf('colors');
+        if (($c['mode'] ?? 'design') !== 'custom' || self::colorProblems($c) !== []) {
+            return '';
+        }
+        $vars = [
+            'hero-1' => $c['base'], 'hero-2' => self::shade($c['base'], 0.3), 'hero-3' => self::shade($c['base'], 0.52),
+            'accent' => $c['accent'], 'accent-dark' => self::shade($c['accent'], 0.25),
+            'urgent' => $c['urgent'], 'soft' => $c['soft'], 'track' => self::shade($c['soft'], 0.2),
+        ];
+        return implode(';', array_map(fn($k, $v) => '--mdash-' . $k . ':' . strtoupper($v), array_keys($vars), $vars));
     }
 
     protected function afterUninstall(): void

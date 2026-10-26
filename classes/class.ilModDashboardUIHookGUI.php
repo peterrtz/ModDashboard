@@ -89,6 +89,8 @@ class ilModDashboardUIHookGUI extends ilUIHookPluginGUI
             $tpl->setVariable('DATE', $this->esc($date));
             $tpl->parseCurrentBlock();
         }
+        $style = $this->pl->colorStyle();
+        $tpl->setVariable('STYLE', $style !== '' ? ' style="' . $this->esc($style) . '"' : '');
         $tpl->setVariable('HIDE_TITLE', $this->pl->conf('hide_title') ? ' mdash--hide-title' : '');
         $tpl->setVariable('GREETING', $this->esc($this->t('greeting_' . $part) . ($name !== '' ? ', ' . $name : '')));
         $tpl->setVariable('LEAD', $this->esc($this->t($resume === null ? 'lead_new' : 'lead_back')));

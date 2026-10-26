@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.0 – 2026-10-26
+
+- Farben in der Konfiguration: „Aus dem Design übernehmen“ (Standard) oder eigene Farben per
+  Farbwähler für Kopfbereich, Akzent, Frist-Markierung und Hintergrund „Weitermachen“.
+  Dunklere Töne werden abgeleitet; zu geringer Kontrast (unter 4,5:1) wird beim Speichern abgelehnt.
+  Ausgabe nur als geprüfte `#RRGGBB`-Werte in CSS-Variablen am Willkommensbereich.
+
 ## 1.0.0 – 2026-10-26
 
 Erste öffentliche Version.

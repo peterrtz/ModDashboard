@@ -56,6 +56,7 @@ Administration → Plugins → ModDashboard → Konfigurieren
 | Anrede | Du oder Sie (deutsche Texte) |
 | Anzeigen für (globale Rollen) | mehrere globale Rollen wählbar |
 | Lokale Rollen | Rollen aus Kursen, Gruppen, Kategorien – per Suche mit Autovervollständigung (ab zwei Zeichen, Rollen- oder Kurstitel), mehrere möglich. Globale und lokale Rollen werden kombiniert: eine Zugehörigkeit genügt. Beide leer = alle |
+| Farben | „Aus dem Design übernehmen“ (Standard: Skin-Variablen `--mdash-*` bzw. neutrale Werte) oder „Eigene Farben“ per Farbwähler für Kopfbereich, Akzent, Frist-Markierung und Hintergrund „Weitermachen“; dunklere Töne werden abgeleitet, zu geringer Kontrast (unter 4,5:1) wird beim Speichern abgelehnt |
 | Seitentitel ausblenden | Standard an: Titel „Dashboard“ nur für Screenreader. Aus, wenn der Skin den Kopfbereich selbst gestaltet |
 | Bereiche | Nächste Frist, Zuletzt angesehen, Lernfortschritt |
 | Schnellzugriffe | Meine Kurse, Kalender, Lernfortschritt, Alle Kurse |
@@ -91,6 +92,11 @@ Standardwerte sind neutral (Delos-Blau). Ein Skin setzt eigene Werte auf `:root`
 ```
 
 Die Standardwerte stehen in `:where(:root)` und verlieren deshalb immer gegen den Skin.
+Alternativ ohne Skin-Änderung: In der Konfiguration „Eigene Farben“ wählen. Diese gelten nur im
+Willkommensbereich und haben Vorrang vor dem Skin; Schrift und alles andere kommen weiter aus dem Skin.
+
+SCSS-Variablen lassen sich nicht zur Laufzeit einstellen – ILIAS kompiliert sie nicht, sie stecken fest
+im CSS des Skins. Das Plugin arbeitet deshalb mit CSS-Variablen.
 Auf Weiß als Text-/Buttonfarbe mindestens 4,5:1 Kontrast einhalten.
 
 ## Icons
@@ -124,6 +130,8 @@ Der Ordner bleibt bei `git pull` unangetastet, solange die Dateien nicht ins Rep
   auf den eigenen Host zeigen; sonst erzeugt das Plugin den Permalink selbst.
   `javascript:`, `data:` und protokoll-relative Adressen werden verworfen.
 - Eigene Links: nur relativ oder http(s).
+- Eigene Farben: nur Werte im Format `#RRGGBB` (geprüft), ausgegeben als CSS-Variablen am
+  Willkommensbereich – keine freie CSS-Eingabe.
 - Icons (auch eigene) werden vor dem Ausliefern bereinigt: keine Skripte, Event-Handler,
   Links oder externen Verweise; keine Verbindung zu Icon-Diensten.
 - Fehler im Plugin werden geloggt; das Dashboard erscheint dann ohne Willkommensbereich.

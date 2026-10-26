@@ -59,3 +59,20 @@ cfg_sec_audience_info#:#Wer den Willkommensbereich sieht. Ohne Auswahl sehen ihn
 cfg_sec_look#:#Ansprache und Darstellung
 cfg_sec_content#:#Inhalte
 cfg_sec_quick#:#Schnellzugriff
+cfg_colors#:#Farben
+cfg_colors_design#:#Aus dem Design übernehmen
+cfg_colors_design_info#:#Farben aus dem aktiven Skin (Variablen --mdash-*); ohne Angaben im Skin neutrale Standardfarben. Empfohlen, wenn ein eigener Skin gepflegt wird.
+cfg_colors_custom#:#Eigene Farben
+cfg_colors_custom_info#:#Überschreibt die Farben des Skins nur im Willkommensbereich. Dunklere Töne für Verlauf und Hover werden abgeleitet. Weiße Schrift muss auf Kopfbereich und Akzent mindestens 4,5:1 Kontrast haben.
+cfg_color_base#:#Kopfbereich
+cfg_color_base_info#:#Grundfarbe des Verlaufs; weiße Schrift darauf.
+cfg_color_accent#:#Akzent
+cfg_color_accent_info#:#Button „Fortsetzen“ und Fortschrittsbalken; weiße Schrift darauf.
+cfg_color_urgent#:#Frist-Markierung
+cfg_color_urgent_info#:#Kante bei Fristen unter 48 Stunden (nur Fläche, kein Text).
+cfg_color_soft#:#Hintergrund „Weitermachen“
+cfg_color_soft_info#:#Heller Hintergrund des Weitermachen-Kastens; dunkle Schrift darauf.
+cfg_color_invalid#:#Bitte Farben als #RRGGBB angeben.
+cfg_color_low_base#:#Kopfbereich ist zu hell für weiße Schrift (unter 4,5:1).
+cfg_color_low_accent#:#Akzent ist zu hell für weiße Schrift (unter 4,5:1).
+cfg_color_low_soft#:#Hintergrund „Weitermachen“ ist zu dunkel für dunkle Schrift (unter 4,5:1).
