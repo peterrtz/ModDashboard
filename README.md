@@ -1,6 +1,6 @@
 # ModDashboard – Willkommensbereich für das ILIAS-Dashboard
 
-> **English:** ModDashboard is a UserInterfaceHook plugin for ILIAS 10 and 11. It adds a personal welcome
+> **English:** ModDashboard is a UserInterfaceHook plugin for ILIAS 11 (branch `release_11`; ILIAS 10: branch `release_10`). It adds a personal welcome
 > area on top of the dashboard: greeting, next deadline, “continue where you left off” with
 > learning progress, recently viewed items and quick links. German and English language files,
 > no own database tables, licensed under GPL-3.0 like ILIAS itself.
@@ -11,7 +11,7 @@
 
 Flyer zum Weitergeben: [docs/ModDashboard-Flyer.pdf](docs/ModDashboard-Flyer.pdf)
 
-UserInterfaceHook-Plugin für ILIAS 10 und 11. Setzt über die Dashboard-Inhalte einen
+UserInterfaceHook-Plugin für ILIAS 11. Setzt über die Dashboard-Inhalte einen
 Willkommensbereich mit
 
 - **Begrüßung** nach Tageszeit mit Vornamen und Datum, kurzer Einleitungssatz,
@@ -31,7 +31,7 @@ Einstellungen liegen in `settings` (Modul `moddash`) und werden bei der Deinstal
 
 ```bash
 cd <ILIAS-Root>
-git clone https://github.com/peterrtz/ModDashboard.git \
+git clone -b release_11 https://github.com/peterrtz/ModDashboard.git \
   public/Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ModDashboard
 composer dump-autoload          # neue/umbenannte Klassen in die Classmap
 php cli/setup.php build         # Plugin-Artefakt und ilCtrl-Struktur neu erzeugen
@@ -45,18 +45,17 @@ und **aktivieren**. Ein Update lädt auch die Sprachdateien neu.
 erste. Fehlen sie nach einem ILIAS-Update, ist das Plugin in der Liste nicht mehr zu sehen
 oder die Konfiguration nicht erreichbar.
 
-## ILIAS 10 und 11
+## ILIAS-Versionen
 
-Eine Version für beide: Das Plugin erkennt die vorhandenen Funktionen selbst.
+Dieser Branch ist für **ILIAS 11**. Je ILIAS-Version gibt es einen eigenen Branch:
 
-| | ILIAS 11 | ILIAS 10 |
+| ILIAS | Branch | Status |
 |---|---|---|
-| Lokale Rollen | Suche am Server mit Autovervollständigung | Liste der lokalen Rollen (höchstens 3000) wird mitgeliefert und beim Tippen im Browser gefiltert |
-| Eigene Farben | Farbwähler | Textfeld für `#RRGGBB` (ILIAS 10 hat keinen Farbwähler im UI-Framework) |
-| Schnellzugriff „Lernfortschritt“ | `ilLPPersonalGUI` | `ilLearningProgressGUI` |
+| 11 | [`release_11`](https://github.com/peterrtz/ModDashboard/tree/release_11) | aktuell, neue Funktionen |
+| 10 | [`release_10`](https://github.com/peterrtz/ModDashboard/tree/release_10) | Fehlerbehebungen |
+| nächste | [`trunk`](https://github.com/peterrtz/ModDashboard/tree/trunk) | Entwicklung, nicht für den Betrieb |
 
-Pfad, Installation und alle übrigen Funktionen sind gleich (beide Versionen nutzen `public/Customizing`).
-Aufnahme unter ILIAS 10.12: [docs/ilias10.png](docs/ilias10.png)
+Releases tragen die ILIAS-Version vorne: `v11.1.2.0` = Plugin 1.2.0 für ILIAS 11.
 
 ## Konfiguration
 
@@ -160,7 +159,7 @@ Der Ordner bleibt bei `git pull` unangetastet, solange die Dateien nicht ins Rep
 
 ## Zusammenspiel mit der Dashboard-Administration
 
-Getestet mit ILIAS 10.12 und 11.5 (Administration › Dashboard). Das Plugin folgt den Schaltern der Administration:
+Getestet mit ILIAS 11.5 (Administration › Dashboard). Das Plugin folgt den Schaltern der Administration:
 
 | Schalter in der Administration | Wirkung im Willkommensbereich |
 |---|---|
