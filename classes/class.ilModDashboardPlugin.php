@@ -216,7 +216,11 @@ class ilModDashboardPlugin extends ilUserInterfaceHookPlugin
         )));
     }
 
-    /** Lokale Rollen, deren Titel (auch übersetzt) oder deren Kurs/Gruppe/Kategorie zum Suchbegriff passt */
+    /**
+     * Lokale Rollen, deren Titel oder deren Kurs/Gruppe/Kategorie zum Suchbegriff passt.
+     * Leerer Suchbegriff = alle (für ILIAS 10, dessen Tag-Feld keine Server-Suche kennt).
+     * @return list<int>
+     */
     public function searchLocalRoles(string $term, int $limit = 20): array
     {
         global $DIC;
@@ -229,7 +233,7 @@ class ilModDashboardPlugin extends ilUserInterfaceHookPlugin
             'JOIN object_reference ref ON ref.ref_id = fa.parent AND ref.deleted IS NULL ' .
             'JOIN object_data c ON c.obj_id = ref.obj_id ' .
             'WHERE r.type = ' . $db->quote('role', 'text') . ' AND fa.parent <> ' . $db->quote(ROLE_FOLDER_ID, 'integer') . ' ' .
-            'AND (' . $db->like('r.title', 'text', $like) . ' OR ' . $db->like('c.title', 'text', $like) . ') ' .
+            ($term === '' ? '' : 'AND (' . $db->like('r.title', 'text', $like) . ' OR ' . $db->like('c.title', 'text', $like) . ') ') .
             'ORDER BY r.obj_id DESC'
         );
         $ids = [];
