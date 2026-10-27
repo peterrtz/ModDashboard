@@ -1,5 +1,8 @@
 # ModDashboard – Willkommensbereich für das ILIAS-Dashboard
 
+> **Entwicklungszweig `trunk`** – Grundlage ist `release_11`, hier entstehen neue Funktionen und die
+> Anpassung an die nächste ILIAS-Version. Nicht für den Betrieb; dafür `release_11` oder `release_10` nehmen.
+
 > **English:** ModDashboard is a UserInterfaceHook plugin for ILIAS 11 (branch `release_11`; ILIAS 10: branch `release_10`). It adds a personal welcome
 > area on top of the dashboard: greeting, next deadline, “continue where you left off” with
 > learning progress, recently viewed items and quick links. German and English language files,
