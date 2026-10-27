@@ -77,27 +77,21 @@ class ilModDashboardConfigGUI extends ilPluginConfigGUI
     }
 
     /**
-     * Lokale Rollen als Tag-Feld. ILIAS 11: Suche am Server mit Autovervollständigung.
-     * ILIAS 10 kennt keine Server-Suche im Tag-Feld – dort werden die Rollen (höchstens 3000)
-     * mitgegeben und im Browser gefiltert.
+     * Lokale Rollen als Tag-Feld mit Suche am Server (Autovervollständigung ab zwei Zeichen).
+     * Bereits gewählte Rollen werden als bekannte Tags übergeben – sonst verwirft das Feld sie beim Absenden.
      * @param list<string> $selected
      */
     private function localRolesInput($f, ilModDashboardPlugin $pl, array $selected): \ILIAS\UI\Component\Input\Field\Tag
     {
         global $DIC;
-        $probe = $f->tag('', []);
-        if (method_exists($probe, 'withAsyncAutocomplete')) {
-            [$url, $token] = (new URLBuilder((new DataFactory())->uri(
-                ILIAS_HTTP_PATH . '/' . $DIC->ctrl()->getLinkTarget($this, 'roleSearch', '', true)
-            )))->acquireParameter(['moddash'], 'term');
-            // Bereits gewählte Rollen als bekannte Tags übergeben – sonst verwirft das Feld sie beim Absenden
-            $input = $f->tag($pl->txt('cfg_local_roles'), $selected, $pl->txt('cfg_local_roles_info'))
-                ->withAsyncAutocomplete($url, $token);
-        } else {
-            $all = array_filter(array_map(fn(int $id) => $pl->localRoleLabel($id), $pl->searchLocalRoles('', 3000)));
-            $input = $f->tag($pl->txt('cfg_local_roles'), array_values(array_unique(array_merge($selected, $all))), $pl->txt('cfg_local_roles_info'));
-        }
-        return $input->withSuggestionsStartAfter(2)->withUserCreatedTagsAllowed(false)->withValue($selected);
+        [$url, $token] = (new URLBuilder((new DataFactory())->uri(
+            ILIAS_HTTP_PATH . '/' . $DIC->ctrl()->getLinkTarget($this, 'roleSearch', '', true)
+        )))->acquireParameter(['moddash'], 'term');
+        return $f->tag($pl->txt('cfg_local_roles'), $selected, $pl->txt('cfg_local_roles_info'))
+            ->withAsyncAutocomplete($url, $token)
+            ->withSuggestionsStartAfter(2)
+            ->withUserCreatedTagsAllowed(false)
+            ->withValue($selected);
     }
 
     private function form(): Form
@@ -129,11 +123,8 @@ class ilModDashboardConfigGUI extends ilPluginConfigGUI
         );
         $pickers = [];
         foreach (array_keys(ilModDashboardPlugin::COLOR_DEFAULTS) as $k) {
-            // ILIAS 11: Farbwähler; ILIAS 10 kennt ihn nicht – dort Textfeld für #RRGGBB
-            $pickers[$k] = (method_exists($f, 'colorSelect')
-                ? $f->colorSelect($pl->txt('cfg_color_' . $k), $pl->txt('cfg_color_' . $k . '_info'))
-                : $f->text($pl->txt('cfg_color_' . $k), $pl->txt('cfg_color_' . $k . '_info') . ' (#RRGGBB)')->withMaxLength(7)
-            )->withValue((string) $colors[$k]);
+            $pickers[$k] = $f->colorSelect($pl->txt('cfg_color_' . $k), $pl->txt('cfg_color_' . $k . '_info'))
+                ->withValue((string) $colors[$k]);
         }
 
         $custom_check = $DIC->refinery()->custom()->constraint(

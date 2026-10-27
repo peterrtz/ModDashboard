@@ -5,7 +5,7 @@
 
 $id = "moddash";
 $version = "1.2.0";
-$ilias_min_version = "10.0";
+$ilias_min_version = "11.0";
 $ilias_max_version = "11.999";
 $responsible = "Peter Reichartz";
 $responsible_mail = "";
