@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.0-alpha.1 (ILIAS 12) – 2026-10-27
+
+- Erste Vorabversion für ILIAS 12 (Branch `release_12`), Funktionsumfang wie 1.2.0 für ILIAS 11.
+- Getestet auf ILIAS `trunk` („12.0_alpha“) mit PHP 8.4. Nicht für den Betrieb.
+
 ## 1.2.0 – 2026-10-27
 
 - Eigene Branches je ILIAS-Version: `release_11`, `release_10`, Entwicklung in `trunk`.

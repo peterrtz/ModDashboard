@@ -1,9 +1,10 @@
 # ModDashboard – Willkommensbereich für das ILIAS-Dashboard
 
-> **Entwicklungszweig `trunk`** – Grundlage ist `release_11`, hier entstehen neue Funktionen und die
-> Anpassung an die nächste ILIAS-Version. Nicht für den Betrieb; dafür `release_11` oder `release_10` nehmen.
+> **Alpha für ILIAS 12** – ILIAS 12 selbst ist noch nicht veröffentlicht (Stand: `trunk`,
+> „12.0_alpha“). Dieser Branch ist zum Testen gedacht, nicht für den Betrieb. Für den Betrieb:
+> `release_11` oder `release_10`.
 
-> **English:** ModDashboard is a UserInterfaceHook plugin for ILIAS 11 (branch `release_11`; ILIAS 10: branch `release_10`). It adds a personal welcome
+> **English:** ModDashboard is a UserInterfaceHook plugin for ILIAS 12 – **alpha**, for testing only (stable: branch `release_11`; ILIAS 10: branch `release_10`). It adds a personal welcome
 > area on top of the dashboard: greeting, next deadline, “continue where you left off” with
 > learning progress, recently viewed items and quick links. German and English language files,
 > no own database tables, licensed under GPL-3.0 like ILIAS itself.
@@ -14,7 +15,7 @@
 
 Flyer zum Weitergeben: [docs/ModDashboard-Flyer.pdf](docs/ModDashboard-Flyer.pdf)
 
-UserInterfaceHook-Plugin für ILIAS 11. Setzt über die Dashboard-Inhalte einen
+UserInterfaceHook-Plugin für ILIAS 12 (Alpha). Setzt über die Dashboard-Inhalte einen
 Willkommensbereich mit
 
 - **Begrüßung** nach Tageszeit mit Vornamen und Datum, kurzer Einleitungssatz,
@@ -34,7 +35,7 @@ Einstellungen liegen in `settings` (Modul `moddash`) und werden bei der Deinstal
 
 ```bash
 cd <ILIAS-Root>
-git clone -b release_11 https://github.com/peterrtz/ModDashboard.git \
+git clone -b release_12 https://github.com/peterrtz/ModDashboard.git \
   public/Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ModDashboard
 composer dump-autoload          # neue/umbenannte Klassen in die Classmap
 php cli/setup.php build         # Plugin-Artefakt und ilCtrl-Struktur neu erzeugen
@@ -50,15 +51,35 @@ oder die Konfiguration nicht erreichbar.
 
 ## ILIAS-Versionen
 
-Dieser Branch ist für **ILIAS 11**. Je ILIAS-Version gibt es einen eigenen Branch:
+Dieser Branch ist für **ILIAS 12 (Alpha)**. Je ILIAS-Version gibt es einen eigenen Branch:
 
 | ILIAS | Branch | Status |
 |---|---|---|
+| 12 | [`release_12`](https://github.com/peterrtz/ModDashboard/tree/release_12) | **Alpha**, zum Testen |
 | 11 | [`release_11`](https://github.com/peterrtz/ModDashboard/tree/release_11) | aktuell, neue Funktionen |
 | 10 | [`release_10`](https://github.com/peterrtz/ModDashboard/tree/release_10) | Fehlerbehebungen |
 | nächste | [`trunk`](https://github.com/peterrtz/ModDashboard/tree/trunk) | Entwicklung, nicht für den Betrieb |
 
 Releases tragen die ILIAS-Version vorne: `v11.1.2.0` = Plugin 1.2.0 für ILIAS 11.
+Vorabversionen haben ein Suffix: `v12.1.2.0-alpha.1`. In `plugin.php` steht weiter `1.2.0`,
+weil ILIAS nur Ziffern auswertet.
+
+### Stand ILIAS 12 (Alpha)
+
+Geprüft auf ILIAS-`trunk` („12.0_alpha“, PHP 8.4) am 27.10.2026: Willkommensbereich,
+Weitermachen mit Lernfortschritt, Frist, Wochenbilanz, Schnellzugriffe, Handy-Ansicht,
+Konfiguration mit Rollensuche und Farbwählern, Rollenfilter. Am Plugin war keine Anpassung nötig.
+
+Bekannte Punkte im ILIAS-Core (nicht im Plugin), Stand dieses Tests:
+
+- `php cli/setup.php update` bricht beim Aktualisieren der **Plugin-Sprachdateien** ab
+  („Identifier "logging.factory" is not defined“). Betrifft jedes Plugin. Umweg: Plugin in der
+  Administration unter „Plugins“ installieren bzw. aktualisieren, dort „Sprachen aktualisieren“.
+- Einige Lernfortschritts-Modi übergeben in `ilDBPdo::in()` einen String statt `false`
+  (`ilLPStatusVisitedPages`, `ilLPStatusCollectionTLT`, `ilLPStatusCollectionMobs`) und brechen
+  unter PHP 8.4 mit einem TypeError ab. Das trifft Lernmodule mit diesen Modi, nicht das Plugin.
+
+Beides kann sich bis zum Release von ILIAS 12 ändern; das Plugin wird dann erneut geprüft.
 
 ## Konfiguration
 
