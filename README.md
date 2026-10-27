@@ -51,6 +51,7 @@ Dieser Branch ist für **ILIAS 11**. Je ILIAS-Version gibt es einen eigenen Bran
 
 | ILIAS | Branch | Status |
 |---|---|---|
+| 12 | [`release_12`](https://github.com/peterrtz/ModDashboard/tree/release_12) | **Alpha**, zum Testen |
 | 11 | [`release_11`](https://github.com/peterrtz/ModDashboard/tree/release_11) | aktuell, neue Funktionen |
 | 10 | [`release_10`](https://github.com/peterrtz/ModDashboard/tree/release_10) | Fehlerbehebungen |
 | nächste | [`trunk`](https://github.com/peterrtz/ModDashboard/tree/trunk) | Entwicklung, nicht für den Betrieb |
