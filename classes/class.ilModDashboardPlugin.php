@@ -218,7 +218,7 @@ class ilModDashboardPlugin extends ilUserInterfaceHookPlugin
 
     /**
      * Lokale Rollen, deren Titel oder deren Kurs/Gruppe/Kategorie zum Suchbegriff passt.
-     * Leerer Suchbegriff = alle (für ILIAS 10, dessen Tag-Feld keine Server-Suche kennt).
+     * Leerer Suchbegriff = alle (das Tag-Feld von ILIAS 10 filtert im Browser).
      * @return list<int>
      */
     public function searchLocalRoles(string $term, int $limit = 20): array

@@ -356,9 +356,7 @@ class ilModDashboardUIHookGUI extends ilUIHookPluginGUI
         if (in_array('progress', $on, true) && ilObjUserTracking::_enabledLearningProgress()
             && ilObjUserTracking::_hasLearningProgressLearner()) {
             $links[] = [
-                // ILIAS 11: ilLPPersonalGUI, ILIAS 10: ilLearningProgressGUI
-                'href' => $ctrl->getLinkTargetByClass([ilDashboardGUI::class, ilAchievementsGUI::class,
-                    class_exists('ilLPPersonalGUI') ? 'ilLPPersonalGUI' : 'ilLearningProgressGUI']),
+                'href' => $ctrl->getLinkTargetByClass([ilDashboardGUI::class, ilAchievementsGUI::class, ilLearningProgressGUI::class]),
                 'label' => $this->t('quick_progress'), 'icon' => 'chart-line-up',
             ];
         }

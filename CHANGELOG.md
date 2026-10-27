@@ -2,9 +2,9 @@
 
 ## 1.2.0 – 2026-10-27
 
-- Läuft jetzt auch unter ILIAS 10 (getestet mit 10.12), weiterhin unter ILIAS 11 (11.5).
-  Unterschiede erkennt das Plugin selbst: In ILIAS 10 werden lokale Rollen im Browser gefiltert
-  statt am Server gesucht, eigene Farben werden als `#RRGGBB` eingetippt.
+- Eigene Branches je ILIAS-Version: `release_11`, `release_10`, Entwicklung in `trunk`.
+- Für ILIAS 10 angepasst (getestet mit 10.12): lokale Rollen als im Browser gefilterte Liste,
+  eigene Farben als `#RRGGBB`-Textfeld, Schnellzugriff „Lernfortschritt“ über `ilLearningProgressGUI`.
 
 ## 1.1.0 – 2026-10-26
 
