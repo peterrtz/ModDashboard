@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0 – 2026-10-27
+
+- Läuft jetzt auch unter ILIAS 10 (getestet mit 10.12), weiterhin unter ILIAS 11 (11.5).
+  Unterschiede erkennt das Plugin selbst: In ILIAS 10 werden lokale Rollen im Browser gefiltert
+  statt am Server gesucht, eigene Farben werden als `#RRGGBB` eingetippt.
+
 ## 1.1.0 – 2026-10-26
 
 - Farben in der Konfiguration: „Aus dem Design übernehmen“ (Standard) oder eigene Farben per

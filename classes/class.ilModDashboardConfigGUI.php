@@ -76,6 +76,30 @@ class ilModDashboardConfigGUI extends ilPluginConfigGUI
         exit;
     }
 
+    /**
+     * Lokale Rollen als Tag-Feld. ILIAS 11: Suche am Server mit Autovervollständigung.
+     * ILIAS 10 kennt keine Server-Suche im Tag-Feld – dort werden die Rollen (höchstens 3000)
+     * mitgegeben und im Browser gefiltert.
+     * @param list<string> $selected
+     */
+    private function localRolesInput($f, ilModDashboardPlugin $pl, array $selected): \ILIAS\UI\Component\Input\Field\Tag
+    {
+        global $DIC;
+        $probe = $f->tag('', []);
+        if (method_exists($probe, 'withAsyncAutocomplete')) {
+            [$url, $token] = (new URLBuilder((new DataFactory())->uri(
+                ILIAS_HTTP_PATH . '/' . $DIC->ctrl()->getLinkTarget($this, 'roleSearch', '', true)
+            )))->acquireParameter(['moddash'], 'term');
+            // Bereits gewählte Rollen als bekannte Tags übergeben – sonst verwirft das Feld sie beim Absenden
+            $input = $f->tag($pl->txt('cfg_local_roles'), $selected, $pl->txt('cfg_local_roles_info'))
+                ->withAsyncAutocomplete($url, $token);
+        } else {
+            $all = array_filter(array_map(fn(int $id) => $pl->localRoleLabel($id), $pl->searchLocalRoles('', 3000)));
+            $input = $f->tag($pl->txt('cfg_local_roles'), array_values(array_unique(array_merge($selected, $all))), $pl->txt('cfg_local_roles_info'));
+        }
+        return $input->withSuggestionsStartAfter(2)->withUserCreatedTagsAllowed(false)->withValue($selected);
+    }
+
     private function form(): Form
     {
         global $DIC;
@@ -92,9 +116,6 @@ class ilModDashboardConfigGUI extends ilPluginConfigGUI
         $opts = static fn(string $prefix, array $keys): array => array_combine($keys, array_map(fn($k) => $pl->txt($prefix . $k), $keys));
 
         // Lokale Rollen: Suche mit Autovervollständigung (wie bei Registrierungscodes), nicht alle auflisten
-        [$search_url, $term_token] = (new URLBuilder((new DataFactory())->uri(
-            ILIAS_HTTP_PATH . '/' . $DIC->ctrl()->getLinkTarget($this, 'roleSearch', '', true)
-        )))->acquireParameter(['moddash'], 'term');
         $local = array_map(fn(int $id) => $pl->localRoleLabel($id), (array) $pl->conf('local_roles'));
 
         // Farben: aus dem Design (Skin) oder eigene Werte; eigene Werte werden auf Format und Kontrast geprüft
@@ -108,8 +129,11 @@ class ilModDashboardConfigGUI extends ilPluginConfigGUI
         );
         $pickers = [];
         foreach (array_keys(ilModDashboardPlugin::COLOR_DEFAULTS) as $k) {
-            $pickers[$k] = $f->colorSelect($pl->txt('cfg_color_' . $k), $pl->txt('cfg_color_' . $k . '_info'))
-                ->withValue((string) $colors[$k]);
+            // ILIAS 11: Farbwähler; ILIAS 10 kennt ihn nicht – dort Textfeld für #RRGGBB
+            $pickers[$k] = (method_exists($f, 'colorSelect')
+                ? $f->colorSelect($pl->txt('cfg_color_' . $k), $pl->txt('cfg_color_' . $k . '_info'))
+                : $f->text($pl->txt('cfg_color_' . $k), $pl->txt('cfg_color_' . $k . '_info') . ' (#RRGGBB)')->withMaxLength(7)
+            )->withValue((string) $colors[$k]);
         }
 
         $custom_check = $DIC->refinery()->custom()->constraint(
@@ -126,11 +150,7 @@ class ilModDashboardConfigGUI extends ilPluginConfigGUI
                         ->withValue(array_map('strval', array_intersect(array_map('strval', (array) $pl->conf('roles')), array_keys($roles)))),
                     // Bereits gewählte Rollen als bekannte Tags übergeben – sonst verwirft das
                     // Tag-Feld sie beim Absenden, weil eigene Tags nicht erlaubt sind.
-                    'local_roles' => $f->tag($pl->txt('cfg_local_roles'), array_values(array_filter($local)), $pl->txt('cfg_local_roles_info'))
-                        ->withAsyncAutocomplete($search_url, $term_token)
-                        ->withSuggestionsStartAfter(2)
-                        ->withUserCreatedTagsAllowed(false)
-                        ->withValue(array_values(array_filter($local))),
+                    'local_roles' => $this->localRolesInput($f, $pl, array_values(array_filter($local))),
                 ], $pl->txt('cfg_sec_audience'), $pl->txt('cfg_sec_audience_info')),
                 'look' => $f->section([
                     'address' => $f->radio($pl->txt('cfg_address'))
