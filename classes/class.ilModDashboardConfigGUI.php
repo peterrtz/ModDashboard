@@ -11,8 +11,8 @@ use ILIAS\UI\Component\Input\Container\Form\Standard as Form;
 use ILIAS\UI\URLBuilder;
 
 /**
- * Konfiguration: Anrede, Zielgruppe (globale und lokale Rollen), Seitentitel, Bereiche,
- * Schnellzugriffe, eigene Links.
+ * Konfiguration: Zielgruppe (globale und lokale Rollen), Anrede, Seitentitel, Farben, Bereiche,
+ * Weitermachen, Schnellzugriffe mit eigenen Links und Icons, persönliche Leiste.
  *
  * @ilCtrl_IsCalledBy ilModDashboardConfigGUI: ilObjComponentSettingsGUI
  */
@@ -40,8 +40,12 @@ class ilModDashboardConfigGUI extends ilPluginConfigGUI
                 $pl->setConf('colors', ['mode' => $mode === 'custom' ? 'custom' : 'design']
                     + ($mode === 'custom' ? ilModDashboardPlugin::normalizeColors((array) $colors) : (array) $pl->conf('colors')));
                 $pl->setConf('sections', array_values($data['content']['sections'] ?? []));
+                $pl->setConf('resume_types', array_values($data['content']['resume_types'] ?? []));
+                $pl->setConf('resume_empty', $data['content']['resume_empty'] === 'hide' ? 'hide' : 'hint');
                 $pl->setConf('quick', array_values($data['quick']['quick'] ?? []));
                 $pl->setConf('custom', trim((string) $data['quick']['custom']));
+                $pl->setConf('icon_library', (bool) ($data['quick']['icon_library'] ?? false));
+                $pl->setConf('personal', array_values(array_intersect(['favourites', 'own'], (array) ($data['personal']['personal'] ?? []))));
                 $DIC->ui()->mainTemplate()->setOnScreenMessage('success', $DIC->language()->txt('saved_successfully'), true);
                 $DIC->ctrl()->redirect($this, 'configure');
             }
@@ -127,6 +131,12 @@ class ilModDashboardConfigGUI extends ilPluginConfigGUI
                 ->withValue((string) $colors[$k]);
         }
 
+        $custom_info = sprintf($pl->txt('cfg_custom_info'), ilModDashboardPlugin::MAX_CUSTOM_LINKS, implode(', ', $pl->listedIcons()));
+        if ($pl->hasPhosphorLibrary()) {
+            $custom_info .= ' ' . sprintf($pl->txt('cfg_custom_info_library'), ilModDashboardPlugin::PHOSPHOR_URL);
+        }
+        $resume_types = $pl->resumeTypeOptions();
+
         $custom_check = $DIC->refinery()->custom()->constraint(
             fn($v) => $pl->invalidCustomLines((string) $v) === [],
             fn($txt, $v) => sprintf($pl->txt('cfg_custom_invalid'), implode(', ', $pl->invalidCustomLines((string) $v)))
@@ -160,15 +170,29 @@ class ilModDashboardConfigGUI extends ilPluginConfigGUI
                 'content' => $f->section([
                     'sections' => $f->multiSelect($pl->txt('cfg_sections'), $opts('cfg_opt_', ['deadline', 'recent', 'progress']), $pl->txt('cfg_sections_info'))
                         ->withValue((array) $pl->conf('sections')),
+                    'resume_types' => $f->multiSelect($pl->txt('cfg_resume_types'), $resume_types, $pl->txt('cfg_resume_types_info'))
+                        ->withValue(array_values(array_intersect((array) $pl->conf('resume_types'), array_keys($resume_types)))),
+                    'resume_empty' => $f->radio($pl->txt('cfg_resume_empty'))
+                        ->withOption('hint', $pl->txt('cfg_resume_empty_hint'), $pl->txt('cfg_resume_empty_hint_info'))
+                        ->withOption('hide', $pl->txt('cfg_resume_empty_hide'), $pl->txt('cfg_resume_empty_hide_info'))
+                        ->withValue($pl->conf('resume_empty') === 'hide' ? 'hide' : 'hint'),
                 ], $pl->txt('cfg_sec_content')),
                 'quick' => $f->section([
                     'quick' => $f->multiSelect($pl->txt('cfg_quick'), $opts('cfg_q_', ['courses', 'calendar', 'progress', 'repository']), $pl->txt('cfg_quick_info'))
                         ->withValue((array) $pl->conf('quick')),
-                    'custom' => $f->textarea(
-                        $pl->txt('cfg_custom'),
-                        sprintf($pl->txt('cfg_custom_info'), ilModDashboardPlugin::MAX_CUSTOM_LINKS, implode(', ', $pl->linkIcons()))
-                    )->withValue((string) $pl->conf('custom'))->withAdditionalTransformation($custom_check),
-                ], $pl->txt('cfg_sec_quick')),
+                    'custom' => $f->textarea($pl->txt('cfg_custom'), $custom_info)
+                        ->withValue((string) $pl->conf('custom'))->withAdditionalTransformation($custom_check),
+                ] + ($pl->hasPhosphorLibrary() ? [
+                    'icon_library' => $f->checkbox($pl->txt('cfg_icon_library'), sprintf($pl->txt('cfg_icon_library_info'), ilModDashboardPlugin::PHOSPHOR_URL))
+                        ->withValue((bool) $pl->conf('icon_library')),
+                ] : []), $pl->txt('cfg_sec_quick')),
+                'personal' => $f->section([
+                    'personal' => $f->multiSelect($pl->txt('cfg_personal'), [
+                        'favourites' => $pl->txt('cfg_personal_favourites'),
+                        'own' => sprintf($pl->txt('cfg_personal_own'), ilModDashboardPlugin::MAX_PERSONAL_LINKS),
+                    ], $pl->txt('cfg_personal_info'))
+                        ->withValue(array_values(array_intersect(['favourites', 'own'], (array) $pl->conf('personal')))),
+                ], $pl->txt('cfg_sec_personal'), $pl->txt('cfg_sec_personal_info')),
             ]
         );
     }

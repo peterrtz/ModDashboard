@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 $id = "moddash";
-$version = "1.2.0";
+$version = "1.3.0";
 $ilias_min_version = "12.0";
 $ilias_max_version = "12.999";
 $responsible = "Peter Reichartz";
