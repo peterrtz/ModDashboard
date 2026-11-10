@@ -76,3 +76,34 @@ cfg_color_invalid#:#Bitte Farben als #RRGGBB angeben.
 cfg_color_low_base#:#Kopfbereich ist zu hell für weiße Schrift (unter 4,5:1).
 cfg_color_low_accent#:#Akzent ist zu hell für weiße Schrift (unter 4,5:1).
 cfg_color_low_soft#:#Hintergrund „Weitermachen“ ist zu dunkel für dunkle Schrift (unter 4,5:1).
+resume_none#:#Gerade gibt es nichts zum Weitermachen.
+resume_none_formal#:#Gerade gibt es nichts zum Weitermachen.
+mine_own#:#Meine Links
+mine_fav#:#Favoriten
+mine_none#:#Hier kannst du Favoriten und eigene Links anzeigen.
+mine_none_formal#:#Hier können Sie Favoriten und eigene Links anzeigen.
+mine_edit#:#Anpassen
+mine_title#:#Meine Links auf dem Dashboard
+mine_description#:#Auswahl für die persönliche Leiste im Willkommensbereich.
+mine_use_fav#:#Favoriten anzeigen
+mine_use_fav_info#:#Zeigt alle Favoriten als Leiste im Willkommensbereich.
+mine_use_own#:#Eigene Links anzeigen
+mine_use_own_info#:#Bis zu vier Objekte aus eigenen Kursen und Gruppen, Favoriten oder zuletzt besuchten Inhalten.
+mine_link_n#:#Link %d
+mine_saved#:#Auswahl gespeichert.
+cfg_resume_types#:#Weitermachen: Objekttypen
+cfg_resume_types_info#:#Nur diese Typen erscheinen unter „Weitermachen“, und nur, wenn der Lernfortschritt am Objekt aktiv ist (bei abgeschaltetem Lernfortschritt in der Installation gilt nur der Typ). Dateien, Weblinks, Kurse usw. erscheinen dort nie, bleiben aber unter „Zuletzt angesehen“.
+cfg_resume_empty#:#Wenn es nichts zum Weitermachen gibt
+cfg_resume_empty_hint#:#Kurzen Hinweis zeigen
+cfg_resume_empty_hint_info#:#Der Kasten bleibt mit einem Satz stehen; „Zuletzt angesehen“ darunter.
+cfg_resume_empty_hide#:#Kasten ausblenden
+cfg_resume_empty_hide_info#:#Kein Kasten „Weitermachen“; gibt es „Zuletzt angesehen“, steht nur diese Liste da (auf dem Handy entfällt sie).
+cfg_custom_info_library#:#Mit freigegebener Icon-Bibliothek zusätzlich jedes Icon von %s (Stil „Regular“, Name wie dort angegeben).
+cfg_icon_library#:#Vollständige Icon-Bibliothek freigeben
+cfg_icon_library_info#:#Rund 1.500 Phosphor-Icons (MIT-Lizenz), lokal im Plugin; Namen auf %s nachschlagen. Ohne Freigabe nur die Standardauswahl.
+cfg_sec_personal#:#Persönliche Leiste
+cfg_sec_personal_info#:#Eine zusätzliche Zeile im Willkommensbereich, die jede Person selbst einrichtet und abschalten kann („Anpassen“).
+cfg_personal#:#Angebot
+cfg_personal_favourites#:#Favoriten (alle; nur wenn Favoriten in der Installation aktiv sind)
+cfg_personal_own#:#Eigene Links (höchstens %d, aus Objekten mit Lesezugriff)
+cfg_personal_info#:#Ohne Auswahl gibt es keine persönliche Leiste. Gespeichert wird in den Nutzereinstellungen; Zugriffsrechte werden bei jeder Anzeige geprüft.
