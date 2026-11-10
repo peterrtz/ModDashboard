@@ -76,3 +76,34 @@ cfg_color_invalid#:#Please enter colours as #RRGGBB.
 cfg_color_low_base#:#Header is too light for white text (below 4.5:1).
 cfg_color_low_accent#:#Accent is too light for white text (below 4.5:1).
 cfg_color_low_soft#:#"Continue" background is too dark for dark text (below 4.5:1).
+resume_none#:#There is nothing to continue right now.
+resume_none_formal#:#There is nothing to continue right now.
+mine_own#:#My links
+mine_fav#:#Favourites
+mine_none#:#Show your favourites and your own links here.
+mine_none_formal#:#Show your favourites and your own links here.
+mine_edit#:#Customise
+mine_title#:#My links on the dashboard
+mine_description#:#Choices for the personal bar in the welcome area.
+mine_use_fav#:#Show favourites
+mine_use_fav_info#:#Shows all favourites as a bar in the welcome area.
+mine_use_own#:#Show own links
+mine_use_own_info#:#Up to four objects from your courses and groups, favourites or recently visited items.
+mine_link_n#:#Link %d
+mine_saved#:#Selection saved.
+cfg_resume_types#:#Continue: object types
+cfg_resume_types_info#:#Only these types appear under “Continue”, and only if learning progress is active for the object (if learning progress is switched off for the installation, only the type counts). Files, web links, courses etc. never appear there but remain under “Recently viewed”.
+cfg_resume_empty#:#If there is nothing to continue
+cfg_resume_empty_hint#:#Show a short note
+cfg_resume_empty_hint_info#:#The box stays with one sentence; “Recently viewed” below it.
+cfg_resume_empty_hide#:#Hide the box
+cfg_resume_empty_hide_info#:#No “Continue” box; if there are recently viewed items, only that list is shown (hidden on phones).
+cfg_custom_info_library#:#With the icon library enabled, also any icon from %s (style “Regular”, name as shown there).
+cfg_icon_library#:#Enable full icon library
+cfg_icon_library_info#:#About 1,500 Phosphor icons (MIT licence), served locally from the plugin; look up names on %s. Without it, only the standard selection.
+cfg_sec_personal#:#Personal bar
+cfg_sec_personal_info#:#An extra row in the welcome area that each person sets up and can switch off (“Customise”).
+cfg_personal#:#Offer
+cfg_personal_favourites#:#Favourites (all; only if favourites are enabled for the installation)
+cfg_personal_own#:#Own links (at most %d, from objects with read access)
+cfg_personal_info#:#Without a selection there is no personal bar. Stored in the user preferences; access rights are checked on every display.

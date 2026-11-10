@@ -1,5 +1,5 @@
 <section class="mdash{HIDE_TITLE}"{STYLE} aria-labelledby="mdash-greeting">
-	<div class="mdash__hero">
+	<div class="mdash__hero{HERO_CLASS}">
 		<div class="mdash__intro">
 			<!-- BEGIN date -->
 			<p class="mdash__date">{DAY_ICON}<span>{DATE}</span></p>
@@ -13,7 +13,8 @@
 			<a class="mdash__due{DUE_CLASS}" href="{D_HREF}">{DUE_ICON}<span class="mdash__due-text"><span class="mdash__due-label">{TXT_DUE}</span> <span class="mdash__due-title">{D_TITLE}</span> <span class="mdash__due-when">{D_WHEN}</span></span></a>
 			<!-- END deadline -->
 		</div>
-		<div class="mdash__panel">
+		<!-- BEGIN panel -->
+		<div class="mdash__panel{PANEL_CLASS}">
 			<!-- BEGIN continue -->
 			<h3 class="mdash__label">{TXT_CONTINUE}</h3>
 			<a class="mdash__resume" href="{C_HREF}">
@@ -27,6 +28,16 @@
 				</span>
 				<span class="mdash__resume-go">{PLAY_ICON}<span>{TXT_RESUME}</span></span>
 			</a>
+			<!-- END continue -->
+			<!-- BEGIN hint -->
+			<h3 class="mdash__label">{TXT_CONTINUE}</h3>
+			<p class="mdash__hint">{TXT_HINT}</p>
+			<!-- END hint -->
+			<!-- BEGIN empty -->
+			<h3 class="mdash__label">{TXT_START}</h3>
+			<p class="mdash__empty">{TXT_EMPTY}</p>
+			<a class="mdash__button" href="{E_HREF}">{E_ICON}<span>{TXT_DISCOVER}</span></a>
+			<!-- END empty -->
 			<!-- BEGIN more_list -->
 			<h4 class="mdash__label mdash__label--small">{TXT_ALSO}</h4>
 			<ul class="mdash__recent">
@@ -35,13 +46,8 @@
 				<!-- END more -->
 			</ul>
 			<!-- END more_list -->
-			<!-- END continue -->
-			<!-- BEGIN empty -->
-			<h3 class="mdash__label">{TXT_START}</h3>
-			<p class="mdash__empty">{TXT_EMPTY}</p>
-			<a class="mdash__button" href="{E_HREF}">{E_ICON}<span>{TXT_DISCOVER}</span></a>
-			<!-- END empty -->
 		</div>
+		<!-- END panel -->
 		<!-- BEGIN quick_nav -->
 		<nav class="mdash__quick" aria-label="{TXT_QUICK}">
 			<!-- BEGIN quick -->
@@ -49,5 +55,23 @@
 			<!-- END quick -->
 		</nav>
 		<!-- END quick_nav -->
+		<!-- BEGIN mine -->
+		<div class="mdash__mine">
+			<!-- BEGIN mine_group -->
+			<nav class="mdash__mine-group" aria-labelledby="mdash-mine-{G_ID}">
+				<h3 class="mdash__mine-label" id="mdash-mine-{G_ID}">{G_LABEL}</h3>
+				<ul class="mdash__chips">
+					<!-- BEGIN chip -->
+					<li><a class="mdash__chip" href="{P_HREF}"><img class="mdash__type" src="{P_ICON}" alt=""><span><span class="mdash__sr">{P_TYPE}: </span>{P_TITLE}</span></a></li>
+					<!-- END chip -->
+				</ul>
+			</nav>
+			<!-- END mine_group -->
+			<!-- BEGIN mine_none -->
+			<p class="mdash__mine-none">{TXT_MINE_NONE}</p>
+			<!-- END mine_none -->
+			<a class="mdash__mine-edit" href="{MINE_EDIT_HREF}">{MINE_EDIT_ICON}<span>{TXT_MINE_EDIT}</span></a>
+		</div>
+		<!-- END mine -->
 	</div>
 </section>

@@ -9,8 +9,9 @@ use ILIAS\DI\Container;
 
 /**
  * Setzt einen Willkommensbereich über die Inhalte des Dashboards:
- * Begrüßung, nächste Frist, Weitermachen (angefangene Lernobjekte zuerst),
- * zuletzt angesehen und Schnellzugriffe.
+ * Begrüßung, nächste Frist, Weitermachen (angefangene Lernobjekte der gewählten Typen
+ * mit Lernfortschritt), zuletzt angesehen, Schnellzugriffe und – falls freigegeben –
+ * die persönliche Leiste (Favoriten, eigene Links).
  *
  * Einhängepunkt: Hook "template_get" auf components/ILIAS/Dashboard/tpl.dashboard.html.
  * Liest nur Core-Daten (Navigationshistorie, Lernfortschritt, read_event, abgeleitete Aufgaben).
@@ -20,13 +21,13 @@ class ilModDashboardUIHookGUI extends ilUIHookPluginGUI
     private const DASHBOARD_TPL = 'components/ILIAS/Dashboard/tpl.dashboard.html';
     /** nie anzeigen */
     private const SKIP_TYPES = ['root', 'cat', 'adm', 'usrf', 'rolf', 'fold', 'itgr'];
-    /** Kurse/Gruppen stehen ohnehin als Kacheln darunter – nur Notnagel für "Weitermachen" */
+    /** Kurse/Gruppen stehen ohnehin als Kacheln darunter – nicht unter „Zuletzt angesehen“ */
     private const CONTAINER_TYPES = ['crs', 'grp'];
     private const MAX_HISTORY = 10;
     private const MAX_RECENT = 3;
     private const SOON_SECONDS = 172800; // 48 h: Frist hervorheben
     /** Sprachvariablen mit eigener Sie-Fassung (Suffix _formal) */
-    private const FORMAL_KEYS = ['lead_back', 'lead_new', 'empty', 'start'];
+    private const FORMAL_KEYS = ['lead_back', 'lead_new', 'empty', 'start', 'resume_none', 'mine_none'];
 
     private ilModDashboardPlugin $pl;
     private DateTimeZone $tz;
@@ -65,13 +66,16 @@ class ilModDashboardUIHookGUI extends ilUIHookPluginGUI
         $sections = (array) $this->pl->conf('sections');
         $this->tz = new DateTimeZone($user->getTimeZone() ?: date_default_timezone_get());
         $this->lang = $dic->language()->getLangKey();
-        $lp_on = in_array('progress', $sections, true)
-            && ilObjUserTracking::_enabledLearningProgress()
+        // Lernfortschritt ist in der Installation an: dann zählt er für die Auswahl „Weitermachen“.
+        // Angezeigt (Balken, Wochenbilanz) wird er nur mit Bereich „Lernfortschritt“ und Freigabe für Lernende.
+        $lp_global = ilObjUserTracking::_enabledLearningProgress();
+        $lp_on = $lp_global && in_array('progress', $sections, true)
             && ilObjUserTracking::_hasLearningProgressLearner();
 
         $tpl = $this->pl->getTemplate('tpl.home.html');
         $now = new DateTimeImmutable('now', $this->tz);
-        [$resume, $recent] = $this->pick($this->history($dic, $lp_on));
+        $history = $this->history($dic, $lp_global);
+        [$resume, $recent] = $this->pick($history, (array) $this->pl->conf('resume_types'), $lp_global);
 
         // Begrüßung
         $hour = (int) $now->format('G');
@@ -93,7 +97,7 @@ class ilModDashboardUIHookGUI extends ilUIHookPluginGUI
         $tpl->setVariable('STYLE', $style !== '' ? ' style="' . $this->esc($style) . '"' : '');
         $tpl->setVariable('HIDE_TITLE', $this->pl->conf('hide_title') ? ' mdash--hide-title' : '');
         $tpl->setVariable('GREETING', $this->esc($this->t('greeting_' . $part) . ($name !== '' ? ', ' . $name : '')));
-        $tpl->setVariable('LEAD', $this->esc($this->t($resume === null ? 'lead_new' : 'lead_back')));
+        $tpl->setVariable('LEAD', $this->esc($this->t($history === [] ? 'lead_new' : 'lead_back')));
 
         // Wochenbilanz – nur wenn es etwas zu feiern gibt
         if ($lp_on && ($done = $this->completedLastWeek($dic)) > 0) {
@@ -118,23 +122,12 @@ class ilModDashboardUIHookGUI extends ilUIHookPluginGUI
             $tpl->parseCurrentBlock();
         }
 
-        // Weitermachen / Dein Start
+        // Weitermachen / Hinweis / Dein Start, darunter „Zuletzt angesehen“
+        $show_recent = in_array('recent', $sections, true) && $recent !== [];
+        $hide_empty = $this->pl->conf('resume_empty') === 'hide';
+        $panel = true;
         if ($resume !== null) {
-            if (in_array('recent', $sections, true) && $recent !== []) {
-                foreach ($recent as $item) {
-                    $tpl->setCurrentBlock('more');
-                    $tpl->setVariable('M_HREF', $this->esc($item['link']));
-                    $tpl->setVariable('M_ICON', $this->esc($item['icon']));
-                    $tpl->setVariable('M_TYPE', $this->esc($item['tname']));
-                    $tpl->setVariable('M_TITLE', $this->esc($item['title']));
-                    $tpl->setVariable('M_WHEN', $this->esc($item['seen'] > 0 ? $this->relDay($item['seen']) : ''));
-                    $tpl->parseCurrentBlock();
-                }
-                $tpl->setCurrentBlock('more_list');
-                $tpl->setVariable('TXT_ALSO', $this->esc($this->t('recent_also')));
-                $tpl->parseCurrentBlock();
-            }
-            $this->progress($tpl, $resume);
+            $this->progress($tpl, $resume, $lp_on);
             if ($resume['seen'] > 0) {
                 $tpl->setCurrentBlock('c_when');
                 $tpl->setVariable('C_WHEN', $this->esc($this->relDay($resume['seen'])));
@@ -149,6 +142,14 @@ class ilModDashboardUIHookGUI extends ilUIHookPluginGUI
             $tpl->setVariable('PLAY_ICON', $this->icon('play-circle'));
             $tpl->setVariable('TXT_RESUME', $this->esc($this->t('resume')));
             $tpl->parseCurrentBlock();
+        } elseif ($hide_empty) {
+            // Kein Kasten „Weitermachen“; bleibt „Zuletzt angesehen“, steht die Liste allein
+            $panel = $show_recent;
+        } elseif ($history !== []) {
+            $tpl->setCurrentBlock('hint');
+            $tpl->setVariable('TXT_CONTINUE', $this->esc($this->t('continue')));
+            $tpl->setVariable('TXT_HINT', $this->esc($this->t('resume_none')));
+            $tpl->parseCurrentBlock();
         } else {
             $tpl->setCurrentBlock('empty');
             $tpl->setVariable('TXT_START', $this->esc($this->t('start')));
@@ -158,6 +159,27 @@ class ilModDashboardUIHookGUI extends ilUIHookPluginGUI
             $tpl->setVariable('TXT_DISCOVER', $this->esc($this->t('quick_repository')));
             $tpl->parseCurrentBlock();
         }
+        if ($panel && $show_recent) {
+            foreach ($recent as $item) {
+                $tpl->setCurrentBlock('more');
+                $tpl->setVariable('M_HREF', $this->esc($item['link']));
+                $tpl->setVariable('M_ICON', $this->esc($item['icon']));
+                $tpl->setVariable('M_TYPE', $this->esc($item['tname']));
+                $tpl->setVariable('M_TITLE', $this->esc($item['title']));
+                $tpl->setVariable('M_WHEN', $this->esc($item['seen'] > 0 ? $this->relDay($item['seen']) : ''));
+                $tpl->parseCurrentBlock();
+            }
+            $tpl->setCurrentBlock('more_list');
+            $tpl->setVariable('TXT_ALSO', $this->esc($this->t('recent_also')));
+            $tpl->parseCurrentBlock();
+        }
+        if ($panel) {
+            $tpl->setCurrentBlock('panel');
+            // Nur die Liste: auf dem Handy ist „Zuletzt angesehen“ ausgeblendet – dann ganz weg
+            $tpl->setVariable('PANEL_CLASS', $resume === null && $hide_empty ? ' mdash__panel--recent-only' : '');
+            $tpl->parseCurrentBlock();
+        }
+        $tpl->setVariable('HERO_CLASS', $panel ? '' : ' mdash__hero--nopanel');
 
         // Schnellzugriff
         $quick = $this->quickLinks($dic, $lp_on);
@@ -174,14 +196,16 @@ class ilModDashboardUIHookGUI extends ilUIHookPluginGUI
             $tpl->parseCurrentBlock();
         }
 
+        $this->personal($dic, $tpl);
+
         return $tpl->get();
     }
 
     /**
      * Zuletzt besuchte, lesbare Objekte – je Objekt nur der jüngste Eintrag.
-     * @return list<array{ref:int,type:string,tname:string,icon:string,title:string,link:string,meta:string,status:?int,pct:?int,seen:int}>
+     * @return list<array{ref:int,type:string,tname:string,icon:string,title:string,link:string,meta:string,lp:bool,status:?int,pct:?int,seen:int}>
      */
-    private function history(Container $dic, bool $lp_on): array
+    private function history(Container $dic, bool $lp_global): array
     {
         $usr = $dic->user()->getId();
         $def = $dic['objDefinition'];
@@ -197,17 +221,10 @@ class ilModDashboardUIHookGUI extends ilUIHookPluginGUI
             }
             // Plugin-Typen über die Komponentenliste erkennen: isPluginTypeName() prüft nur das
             // Präfix "x" und übersieht Plugins wie "cshp". Inaktive Plugins: Objekt auslassen.
-            if ($plugins->hasPluginId($type)) {
-                if (!$plugins->getPluginById($type)->isActive()) {
-                    continue;
-                }
-                $tname = ilObjectPlugin::lookupTxtById($type, 'obj_' . $type);
-            } else {
-                $tname = $dic->language()->txt('obj_' . $type);
+            if ($plugins->hasPluginId($type) && !$plugins->getPluginById($type)->isActive()) {
+                continue;
             }
-            if (str_starts_with($tname, '-') && str_ends_with($tname, '-')) {
-                $tname = $dic->language()->txt('object'); // Sprachvariable fehlt im Fremd-Plugin
-            }
+            $tname = $this->typeName($dic, $type);
             $obj = ilObject::_lookupObjId($ref);
 
             // Link aus der Historie nur, wenn er auf diese Installation zeigt – sonst Permalink.
@@ -217,7 +234,8 @@ class ilModDashboardUIHookGUI extends ilUIHookPluginGUI
             }
 
             $status = $pct = null;
-            if ($lp_on && ilObjectLP::isSupportedObjectType($type) && ilObjectLP::getInstance($obj)->isActive()) {
+            $lp = $lp_global && ilObjectLP::isSupportedObjectType($type) && ilObjectLP::getInstance($obj)->isActive();
+            if ($lp) {
                 // false: keinen Neuberechnungslauf auf dem Dashboard anstoßen
                 $status = ilLPStatus::_lookupStatus($obj, $usr, false);
                 $pct = ilLPStatus::_lookupPercentage($obj, $usr);
@@ -240,6 +258,7 @@ class ilModDashboardUIHookGUI extends ilUIHookPluginGUI
                 'title' => (string) $it['title'],
                 'link' => $link,
                 'meta' => $meta,
+                'lp' => $lp,
                 'status' => $status,
                 'pct' => $pct,
                 'seen' => (int) ($events[0]['last_access'] ?? 0),
@@ -252,32 +271,44 @@ class ilModDashboardUIHookGUI extends ilUIHookPluginGUI
     }
 
     /**
-     * Weitermachen: zuerst angefangene Lernobjekte, dann nicht abgeschlossene, dann das jüngste.
-     * Kurse/Gruppen nur, wenn es sonst nichts gibt. Zuletzt angesehen: übrige Lernobjekte.
+     * Weitermachen: nur gewählte Objekttypen, und – wenn der Lernfortschritt in der Installation an ist –
+     * nur Objekte mit aktivem Lernfortschritt. Reihenfolge: angefangen, nicht abgeschlossen, das jüngste.
+     * Ohne Treffer gibt es keinen Ersatz (z. B. keine Datei, keinen Kurs).
+     * Zuletzt angesehen: übrige Objekte außer Kursen und Gruppen.
+     * @param list<string> $types
      * @return array{0:?array,1:list<array>}
      */
-    private function pick(array $items): array
+    private function pick(array $items, array $types, bool $lp_global): array
     {
-        $learning = array_values(array_filter($items, fn($i) => !in_array($i['type'], self::CONTAINER_TYPES, true)));
-        $pool = $learning ?: $items;
-        $tests = [
+        $pool = array_values(array_filter(
+            $items,
+            fn($i) => in_array($i['type'], $types, true) && (!$lp_global || $i['lp'])
+        ));
+        $resume = null;
+        foreach ([
             fn($i) => $i['status'] === ilLPStatus::LP_STATUS_IN_PROGRESS_NUM,
             fn($i) => $i['status'] !== ilLPStatus::LP_STATUS_COMPLETED_NUM,
             fn($i) => true,
-        ];
-        foreach ($tests as $test) {
+        ] as $test) {
             foreach ($pool as $item) {
                 if ($test($item)) {
-                    $rest = array_filter($learning, fn($i) => $i['ref'] !== $item['ref']);
-                    return [$item, array_slice(array_values($rest), 0, self::MAX_RECENT)];
+                    $resume = $item;
+                    break 2;
                 }
             }
         }
-        return [null, []];
+        $rest = array_filter(
+            $items,
+            fn($i) => !in_array($i['type'], self::CONTAINER_TYPES, true) && $i['ref'] !== ($resume['ref'] ?? 0)
+        );
+        return [$resume, array_slice(array_values($rest), 0, self::MAX_RECENT)];
     }
 
-    private function progress(ilTemplate $tpl, array $item): void
+    private function progress(ilTemplate $tpl, array $item, bool $lp_on): void
     {
+        if (!$lp_on) {
+            return;
+        }
         $text = match ($item['status']) {
             ilLPStatus::LP_STATUS_COMPLETED_NUM => $this->t('lp_completed'),
             ilLPStatus::LP_STATUS_IN_PROGRESS_NUM => $item['pct'] > 0
@@ -364,6 +395,98 @@ class ilModDashboardUIHookGUI extends ilUIHookPluginGUI
             $links[] = ['href' => ilLink::_getLink(ROOT_FOLDER_ID), 'label' => $this->t('quick_repository'), 'icon' => 'compass'];
         }
         return array_merge($links, $this->pl->customLinks());
+    }
+
+    /**
+     * Persönliche Leiste: Favoriten (alle) und eigene Links (höchstens vier), jeweils nur, wenn
+     * die Administration den Teil freigegeben hat und der Nutzer ihn nicht abgeschaltet hat.
+     * Zugriff wird bei jeder Anzeige neu geprüft.
+     */
+    private function personal(Container $dic, ilTemplate $tpl): void
+    {
+        $parts = $this->pl->personalParts();
+        $user = $dic->user();
+        if ($parts === [] || $user->getId() === ANONYMOUS_USER_ID) {
+            return;
+        }
+        $prefs = $this->pl->personalPrefs($user);
+        $groups = [];
+        if (in_array('own', $parts, true) && $prefs['own']) {
+            $groups['own'] = $this->objectChips($dic, $prefs['links']);
+        }
+        if (in_array('favourites', $parts, true) && $prefs['fav']) {
+            $refs = array_map(fn($f) => (int) $f['ref_id'], (new ilFavouritesManager())->getFavouritesOfUser($user->getId()));
+            $groups['fav'] = $this->objectChips($dic, $refs);
+        }
+        $shown = false;
+        foreach ($groups as $id => $chips) {
+            if ($chips === []) {
+                continue;
+            }
+            foreach ($chips as $c) {
+                $tpl->setCurrentBlock('chip');
+                $tpl->setVariable('P_HREF', $this->esc($c['link']));
+                $tpl->setVariable('P_ICON', $this->esc($c['icon']));
+                $tpl->setVariable('P_TYPE', $this->esc($c['tname']));
+                $tpl->setVariable('P_TITLE', $this->esc($c['title']));
+                $tpl->parseCurrentBlock();
+            }
+            $tpl->setCurrentBlock('mine_group');
+            $tpl->setVariable('G_ID', $id);
+            $tpl->setVariable('G_LABEL', $this->esc($this->t($id === 'own' ? 'mine_own' : 'mine_fav')));
+            $tpl->parseCurrentBlock();
+            $shown = true;
+        }
+        if (!$shown) {
+            $tpl->setCurrentBlock('mine_none');
+            $tpl->setVariable('TXT_MINE_NONE', $this->esc($this->t('mine_none')));
+            $tpl->parseCurrentBlock();
+        }
+        $tpl->setCurrentBlock('mine');
+        $tpl->setVariable('MINE_EDIT_HREF', $this->esc(
+            $dic->ctrl()->getLinkTargetByClass([ilUIPluginRouterGUI::class, ilModDashboardPersonalGUI::class], 'show')
+        ));
+        $tpl->setVariable('MINE_EDIT_ICON', $this->icon('sliders-horizontal'));
+        $tpl->setVariable('TXT_MINE_EDIT', $this->esc($this->t('mine_edit')));
+        $tpl->parseCurrentBlock();
+    }
+
+    /**
+     * Objekte als Chips – nur, was im Magazin steht, nicht im Papierkorb liegt und lesbar ist.
+     * @param list<int> $refs
+     * @return list<array{link:string,icon:string,tname:string,title:string}>
+     */
+    private function objectChips(Container $dic, array $refs): array
+    {
+        $out = [];
+        $tree = $dic->repositoryTree();
+        foreach (array_unique($refs) as $ref) {
+            if ($ref <= 0 || !$tree->isInTree($ref) || !$dic->access()->checkAccess('read', '', $ref)) {
+                continue;
+            }
+            $obj = ilObject::_lookupObjId($ref);
+            $type = ilObject::_lookupType($obj);
+            if (in_array($type, self::SKIP_TYPES, true) && $type !== 'cat') {
+                continue;
+            }
+            $out[] = [
+                'link' => ilLink::_getLink($ref, $type),
+                'icon' => $this->typeIcon($type),
+                'tname' => $this->typeName($dic, $type),
+                'title' => ilObject::_lookupTitle($obj),
+            ];
+        }
+        return $out;
+    }
+
+    /** Typname; Plugin-Typen über das Plugin, fehlende Sprachvariable → „Objekt“ */
+    private function typeName(Container $dic, string $type): string
+    {
+        $plugins = $dic['component.repository'];
+        $tname = $plugins->hasPluginId($type)
+            ? ilObjectPlugin::lookupTxtById($type, 'obj_' . $type)
+            : $dic->language()->txt('obj_' . $type);
+        return str_starts_with($tname, '-') && str_ends_with($tname, '-') ? $dic->language()->txt('object') : $tname;
     }
 
     /** Objekt-Icon; fällt auf das Komponenten-Icon zurück, wenn ein Plugin keinen gültigen Pfad liefert */

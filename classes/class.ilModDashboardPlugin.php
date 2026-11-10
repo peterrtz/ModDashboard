@@ -17,8 +17,21 @@ class ilModDashboardPlugin extends ilUserInterfaceHookPlugin
         'arrow-square-out', 'book-open-text', 'books', 'calendar-check', 'calendar-dots', 'certificate',
         'chats-circle', 'compass', 'first-aid-kit', 'folder-open', 'graduation-cap', 'heartbeat',
         'house', 'lifebuoy', 'question', 'users-three',
+        'chalkboard-teacher', 'clipboard-text', 'envelope-simple', 'exam', 'file-text', 'link',
+        'newspaper', 'notebook', 'phone', 'video-camera',
     ];
     public const MAX_CUSTOM_LINKS = 4;
+
+    /** Vollständige Phosphor-Bibliothek (Stil regular); nur nutzbar, wenn in der Konfiguration freigegeben */
+    public const PHOSPHOR_DIR = 'icons-phosphor';
+    public const PHOSPHOR_URL = 'https://phosphoricons.com';
+
+    /** Objekttypen, die für „Weitermachen“ wählbar sind (nur mit Lernfortschritt sinnvoll) */
+    public const RESUME_TYPE_CANDIDATES = ['lm', 'htlm', 'sahs', 'cmix', 'lti', 'lso', 'exc', 'tst', 'svy', 'iass', 'file', 'wiki', 'mcst'];
+
+    /** Persönliche Leiste: höchstens so viele eigene Links je Nutzer; Ablage in usr_pref */
+    public const MAX_PERSONAL_LINKS = 4;
+    public const PERSONAL_PREF = 'moddash_personal';
 
     /** Eigene Farben (nur #RRGGBB); weitere Töne werden daraus abgeleitet */
     public const COLOR_DEFAULTS = [
@@ -45,6 +58,8 @@ class ilModDashboardPlugin extends ilUserInterfaceHookPlugin
 
     /** @var array<string,string> */
     private array $svg_cache = [];
+    /** @var array<string,list<string>> */
+    private array $icon_cache = [];
 
     private const DEFAULTS = [
         'address' => 'du',                                   // du | sie
@@ -55,6 +70,10 @@ class ilModDashboardPlugin extends ilUserInterfaceHookPlugin
         'sections' => ['recent', 'deadline', 'progress'],
         'quick' => ['calendar', 'progress', 'repository'],   // 'courses' ist optional
         'custom' => '',                                      // "Titel | URL | Icon" je Zeile
+        'resume_types' => ['lm', 'lso', 'exc', 'tst', 'sahs'], // Weitermachen: nur diese Typen
+        'resume_empty' => 'hint',                            // hint | hide, wenn nichts zum Weitermachen da ist
+        'personal' => [],                                    // Persönliche Leiste: 'favourites', 'own'; leer = aus
+        'icon_library' => false,                             // vollständige Phosphor-Bibliothek freigeben
     ];
 
     private ?ilSetting $settings_cache = null;
@@ -125,8 +144,38 @@ class ilModDashboardPlugin extends ilUserInterfaceHookPlugin
         return isset($parts['host']) && strcasecmp($parts['host'], $own) === 0;
     }
 
-    /** @return list<string> für eigene Links wählbare Icons: mitgelieferte plus eigene Bibliothek */
-    public function linkIcons(): array
+    /**
+     * Für eigene Links wählbare Icons: Standardauswahl, eigene Bibliothek und – falls freigegeben –
+     * die vollständige Phosphor-Bibliothek. Mit $any auch dann, wenn sie (noch) nicht freigegeben ist –
+     * so lässt sich die Freigabe im selben Speichervorgang mit einem Bibliotheks-Icon kombinieren.
+     * @return list<string>
+     */
+    public function linkIcons(bool $any = false): array
+    {
+        $ck = $any ? 'any' : 'on';
+        if (isset($this->icon_cache[$ck])) {
+            return $this->icon_cache[$ck];
+        }
+        $names = self::LINK_ICONS;
+        $dirs = [self::CUSTOM_ICON_DIR];
+        if ($any || $this->conf('icon_library')) {
+            $dirs[] = self::PHOSPHOR_DIR;
+        }
+        foreach ($dirs as $dir) {
+            foreach (glob($this->getDirectory() . '/' . $dir . '/*.svg') ?: [] as $file) {
+                $name = basename($file, '.svg');
+                if (preg_match(self::ICON_NAME, $name)) {
+                    $names[] = $name;
+                }
+            }
+        }
+        $names = array_values(array_unique($names));
+        sort($names);
+        return $this->icon_cache[$ck] = $names;
+    }
+
+    /** @return list<string> Standardauswahl plus eigene Bibliothek – für die Liste im Formular */
+    public function listedIcons(): array
     {
         $names = self::LINK_ICONS;
         foreach (glob($this->getDirectory() . '/' . self::CUSTOM_ICON_DIR . '/*.svg') ?: [] as $file) {
@@ -138,6 +187,11 @@ class ilModDashboardPlugin extends ilUserInterfaceHookPlugin
         $names = array_values(array_unique($names));
         sort($names);
         return $names;
+    }
+
+    public function hasPhosphorLibrary(): bool
+    {
+        return is_dir($this->getDirectory() . '/' . self::PHOSPHOR_DIR);
     }
 
     /**
@@ -155,7 +209,11 @@ class ilModDashboardPlugin extends ilUserInterfaceHookPlugin
             return $this->svg_cache[$key];
         }
         $svg = '';
-        foreach ([self::CUSTOM_ICON_DIR, 'icons'] as $dir) {
+        $dirs = [self::CUSTOM_ICON_DIR, 'icons'];
+        if ($this->conf('icon_library')) {
+            $dirs[] = self::PHOSPHOR_DIR;
+        }
+        foreach ($dirs as $dir) {
             $file = $this->getDirectory() . '/' . $dir . '/' . $name . '.svg';
             if (is_file($file) && filesize($file) <= self::ICON_MAX_BYTES) {
                 $svg = self::cleanSvg((string) file_get_contents($file), $class);
@@ -357,9 +415,63 @@ class ilModDashboardPlugin extends ilUserInterfaceHookPlugin
         return implode(';', array_map(fn($k, $v) => '--mdash-' . $k . ':' . strtoupper($v), array_keys($vars), $vars));
     }
 
+    /**
+     * Für „Weitermachen“ wählbare Typen dieser Installation (mit Lernfortschritt), Schlüssel = Typ.
+     * @return array<string,string>
+     */
+    public function resumeTypeOptions(): array
+    {
+        global $DIC;
+        $def = $DIC['objDefinition'];
+        $out = [];
+        foreach (self::RESUME_TYPE_CANDIDATES as $type) {
+            if ($def->getClassName($type) !== '' && ilObjectLP::isSupportedObjectType($type)) {
+                $out[$type] = $DIC->language()->txt('obj_' . $type);
+            }
+        }
+        return $out;
+    }
+
+    /** @return list<string> 'favourites' und/oder 'own', soweit freigegeben und verfügbar */
+    public function personalParts(): array
+    {
+        $parts = array_values(array_intersect(['favourites', 'own'], (array) $this->conf('personal')));
+        if (in_array('favourites', $parts, true) && !(new ilFavouritesManager())->isGloballyActivated()) {
+            $parts = array_values(array_diff($parts, ['favourites']));
+        }
+        return $parts;
+    }
+
+    /**
+     * Persönliche Einstellungen des Nutzers (usr_pref). Standard: alles an, was freigegeben ist.
+     * @return array{fav:bool,own:bool,links:list<int>}
+     */
+    public function personalPrefs(ilObjUser $user): array
+    {
+        $raw = json_decode((string) $user->getPref(self::PERSONAL_PREF), true);
+        $raw = is_array($raw) ? $raw : [];
+        return [
+            'fav' => (bool) ($raw['fav'] ?? true),
+            'own' => (bool) ($raw['own'] ?? true),
+            'links' => array_slice(array_values(array_filter(array_map('intval', (array) ($raw['links'] ?? [])), fn(int $r) => $r > 0)), 0, self::MAX_PERSONAL_LINKS),
+        ];
+    }
+
+    /** @param array{fav:bool,own:bool,links:list<int>} $prefs */
+    public function setPersonalPrefs(ilObjUser $user, array $prefs): void
+    {
+        $user->writePref(self::PERSONAL_PREF, (string) json_encode([
+            'fav' => (bool) $prefs['fav'],
+            'own' => (bool) $prefs['own'],
+            'links' => array_slice(array_values(array_unique(array_map('intval', $prefs['links']))), 0, self::MAX_PERSONAL_LINKS),
+        ]));
+    }
+
     protected function afterUninstall(): void
     {
+        global $DIC;
         $this->settings()->deleteAll();
+        $DIC->database()->manipulateF('DELETE FROM usr_pref WHERE keyword = %s', ['text'], [self::PERSONAL_PREF]);
     }
 
     /** @return list<array{no:int,label:string,href:string,icon:string,valid:bool}> */
@@ -372,12 +484,13 @@ class ilModDashboardPlugin extends ilUserInterfaceHookPlugin
             }
             $p = array_map('trim', explode('|', $line));
             $icon = $p[2] ?? '';
-            $known = in_array($icon, $this->linkIcons(), true);
+            // Gültig ist jedes vorhandene Icon; angezeigt wird es nur, wenn es aktuell verfügbar ist
+            $known = in_array($icon, $this->linkIcons(true), true);
             $out[] = [
                 'no' => $i + 1,
                 'label' => $p[0],
                 'href' => $p[1] ?? '',
-                'icon' => $known ? $icon : 'arrow-square-out',
+                'icon' => in_array($icon, $this->linkIcons(), true) ? $icon : 'arrow-square-out',
                 'valid' => $p[0] !== '' && self::isSafeUrl($p[1] ?? '') && ($icon === '' || $known),
             ];
         }
