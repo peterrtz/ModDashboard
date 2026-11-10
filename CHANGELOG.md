@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.3.0 – 2026-11-10
+
+- **Weitermachen** nur noch für gewählte Objekttypen (Standard: Lernmodul, Lernsequenz, Übung, Test,
+  SCORM) und nur mit aktivem Lernfortschritt. Dateien, Weblinks, Kurse oder Gruppen rücken nicht
+  mehr als Ersatz nach; sie bleiben unter „Zuletzt angesehen“.
+- Gibt es nichts zum Weitermachen: kurzer Hinweis (Standard) oder Kasten ausblenden – einstellbar.
+- **Persönliche Leiste** (optional, in der Konfiguration freizugeben): Favoriten (alle) und bis zu vier
+  eigene Links; jede Person richtet sie unter „Anpassen“ selbst ein oder schaltet sie ab.
+  Gespeichert in den Nutzereinstellungen, keine eigenen Tabellen; Leserecht wird bei jeder Anzeige geprüft.
+- **Icons:** zehn weitere in der Standardauswahl (u. a. `chalkboard-teacher`, `exam`, `video-camera`);
+  vollständige Phosphor-Bibliothek (1.512 Icons, regular, MIT) im Plugin, per Konfiguration freizugeben.
+- Handy-Ansicht: Kasten nur mit „Zuletzt angesehen“ entfällt; Leisten-Chips wischbar statt untereinander.
+- Update: neue GUI-Klasse – `composer dump-autoload` und `php cli/setup.php build` erforderlich.
+
 ## 1.2.0 – 2026-10-27
 
 - Eigene Branches je ILIAS-Version: `release_11`, `release_10`, Entwicklung in `trunk`.
