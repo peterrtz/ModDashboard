@@ -5,7 +5,8 @@
 
 > **English:** ModDashboard is a UserInterfaceHook plugin for ILIAS 11 (branch `release_11`; ILIAS 10: branch `release_10`). It adds a personal welcome
 > area on top of the dashboard: greeting, next deadline, “continue where you left off” with
-> learning progress, recently viewed items and quick links. German and English language files,
+> learning progress (restricted to chosen object types), recently viewed items, quick links and an
+> optional personal bar with favourites and own links. German and English language files,
 > no own database tables, licensed under GPL-3.0 like ILIAS itself.
 
 ![ModDashboard auf dem ILIAS-Dashboard](docs/screenshot.png)
@@ -20,15 +21,20 @@ Willkommensbereich mit
 - **Begrüßung** nach Tageszeit mit Vornamen und Datum, kurzer Einleitungssatz,
 - **Wochenbilanz**: „3 Lerneinheiten in den letzten 7 Tagen abgeschlossen“ (nur wenn > 0),
 - **Nächste Frist** aus den To-Dos (Übungen, Tests …), hervorgehoben unter 48 h,
-- **Weitermachen**: zuerst angefangene Lernobjekte, mit Fortschritt und „zuletzt geöffnet“;
-  Kurse und Gruppen nur, wenn es sonst nichts gibt (sie stehen ohnehin darunter),
+- **Weitermachen**: zuerst angefangene Lernobjekte, mit Fortschritt und „zuletzt geöffnet“ –
+  nur gewählte Objekttypen (Standard: Lernmodul, Lernsequenz, Übung, Test, SCORM) und nur mit
+  aktivem Lernfortschritt; ohne Treffer ein kurzer Hinweis oder gar kein Kasten (einstellbar),
 - **Zuletzt angesehen**: bis zu drei weitere Lernobjekte mit Zeitangabe,
 - **Schnellzugriff**: Kalender, Lernfortschritt, Alle Kurse, optional Meine Kurse und
-  bis zu vier eigene Links.
+  bis zu vier eigene Links,
+- **Persönliche Leiste** (optional): Favoriten und bis zu vier selbst gewählte Links; jede Person
+  richtet sie über „Anpassen“ selbst ein oder schaltet sie ab.
 
 Das Plugin legt keine Tabellen an. Gelesen werden nur Core-Daten: Navigationshistorie,
 Lernfortschritt (`ut_lp_marks`), Lesezeitpunkte (`read_event`) und abgeleitete Aufgaben.
 Einstellungen liegen in `settings` (Modul `moddash`) und werden bei der Deinstallation gelöscht.
+Die persönliche Leiste speichert je Person einen Eintrag in den Nutzereinstellungen (`usr_pref`,
+Schlüssel `moddash_personal`); auch er wird bei der Deinstallation gelöscht.
 
 ## Installation und Update
 
@@ -76,7 +82,11 @@ Administration → Plugins → ModDashboard → Konfigurieren
 | Seitentitel ausblenden | Standard an: Titel „Dashboard“ nur für Screenreader. Aus, wenn der Skin den Kopfbereich selbst gestaltet |
 | Bereiche | Nächste Frist, Zuletzt angesehen, Lernfortschritt |
 | Schnellzugriffe | Meine Kurse, Kalender, Lernfortschritt, Alle Kurse |
+| Weitermachen: Objekttypen | Standard Lernmodul, Lernsequenz, Übung, Test, SCORM; wählbar sind Typen mit Lernfortschritt. Objekte erscheinen nur, wenn ihr Lernfortschritt aktiv ist (ist er in der ganzen Installation aus, zählt nur der Typ). Kein Ersatz durch Dateien, Weblinks oder Kurse |
+| Wenn es nichts zum Weitermachen gibt | „Kurzen Hinweis zeigen“ (Standard) oder „Kasten ausblenden“; „Zuletzt angesehen“ bleibt in beiden Fällen |
 | Eigene Links | je Zeile `Titel \| URL \| Icon`, höchstens 4 |
+| Vollständige Icon-Bibliothek freigeben | Standard aus. An: alle rund 1.500 Phosphor-Icons (Stil „Regular“) für eigene Links, Namen wie auf [phosphoricons.com](https://phosphoricons.com) |
+| Persönliche Leiste | Favoriten und/oder eigene Links (höchstens 4) anbieten; leer = keine Leiste. Jede Person entscheidet unter „Anpassen“ selbst |
 
 Beispiel für eigene Links:
 
@@ -87,9 +97,16 @@ Hilfe zur Lernplattform | /goto.php/crs/123 | lifebuoy
 
 Zulässige Icons stehen im Formular; URLs müssen relativ sein oder mit `http(s)://` beginnen.
 
+**Persönliche Leiste:** Über „Anpassen“ im Willkommensbereich schalten Nutzer Favoriten und eigene
+Links ein oder aus und wählen bis zu vier Objekte aus ihren Kursen und Gruppen (samt Inhalt),
+ihren Favoriten oder zuletzt besuchten Objekten. Beim Anzeigen prüft das Plugin jedes Mal das
+Leserecht; gelöschte oder nicht mehr zugängliche Objekte verschwinden von selbst.
+Die Auswahl ist auf 300 Einträge begrenzt, damit die Seite auch in großen Kursen schnell bleibt.
+
 **Datenschutz:** „Zuletzt angesehen“ zeigt die persönliche Lernhistorie groß auf der
 Startseite. Für Rollen, die ihr Dashboard im Unterricht zeigen, den Bereich abwählen
-oder die Rolle unter „Anzeigen für“ ausschließen.
+oder die Rolle unter „Anzeigen für“ ausschließen. Dasselbe gilt für die persönliche Leiste
+(Favoriten); sie lässt sich zusätzlich von jeder Person selbst abschalten.
 
 ## Farben und Schrift
 
@@ -117,9 +134,16 @@ Auf Weiß als Text-/Buttonfarbe mindestens 4,5:1 Kontrast einhalten.
 
 ## Icons
 
-Mitgeliefert sind 24 [Phosphor Icons](https://phosphoricons.com) (Stil „regular“, MIT-Lizenz,
-siehe [THIRD_PARTY.md](THIRD_PARTY.md)). Sie liegen im Plugin und werden inline ausgeliefert –
+Mitgeliefert sind 35 [Phosphor Icons](https://phosphoricons.com) (Stil „regular“, MIT-Lizenz,
+siehe [THIRD_PARTY.md](THIRD_PARTY.md)); 26 davon stehen als Standardauswahl für eigene Links bereit,
+die übrigen nutzt das Plugin selbst. Sie liegen im Plugin und werden inline ausgeliefert –
 der Browser lädt nichts von Phosphor oder einem CDN nach.
+
+**Vollständige Bibliothek:** `icons-phosphor/` enthält alle 1.512 Phosphor-Icons im Stil „regular“
+(rund 750 KB). Sie sind erst nutzbar, wenn in der Konfiguration „Vollständige Icon-Bibliothek
+freigeben“ aktiv ist; das Formular verweist dann auf phosphoricons.com zum Nachschlagen der Namen.
+Auch diese Icons kommen lokal aus dem Plugin. Wer sie nicht braucht, kann den Ordner löschen –
+die Option verschwindet dann aus dem Formular.
 
 **Eigene Icon-Bibliothek:** SVG-Dateien in `icons-custom/` ergänzen die Auswahl für eigene Links
 oder ersetzen gleichnamige mitgelieferte Icons (z. B. `icons-custom/sun.svg`). Auch sie werden lokal
@@ -133,10 +157,12 @@ Der Ordner bleibt bei `git pull` unangetastet, solange die Dateien nicht ins Rep
 | `classes/class.ilModDashboardUIHookGUI.php` | Hook auf `components/ILIAS/Dashboard/tpl.dashboard.html` (`template_get`, PREPEND) |
 | `classes/class.ilModDashboardConfigGUI.php` | Konfigurationsformular (UI-Framework) |
 | `classes/class.ilModDashboardPlugin.php` | Einstellungen, Link-Prüfung |
+| `classes/class.ilModDashboardPersonalGUI.php` | Seite „Anpassen“ der persönlichen Leiste (über `ilUIPluginRouterGUI`) |
 | `templates/tpl.home.html` | Markup |
 | `css/moddashboard.css` | Gestaltung, Custom Properties `--mdash-*` |
 | `lang/ilias_de.lang`, `lang/ilias_en.lang` | Texte, Sie-Fassungen mit Suffix `_formal` |
 | `icons/*.svg` | Phosphor Icons (regular, MIT, siehe `icons/LICENSE-phosphor`) |
+| `icons-phosphor/` | vollständige Phosphor-Bibliothek (regular, MIT), nur nach Freigabe nutzbar |
 | `icons-custom/` | eigene Icons (optional), ergänzen oder ersetzen die mitgelieferten |
 
 ## Sicherheit
@@ -146,6 +172,8 @@ Der Ordner bleibt bei `git pull` unangetastet, solange die Dateien nicht ins Rep
   auf den eigenen Host zeigen; sonst erzeugt das Plugin den Permalink selbst.
   `javascript:`, `data:` und protokoll-relative Adressen werden verworfen.
 - Eigene Links: nur relativ oder http(s).
+- Persönliche Leiste: Nutzer können nur Objekte aus der angebotenen Auswahl speichern; bei jeder
+  Anzeige wird das Leserecht neu geprüft, Objekte im Papierkorb erscheinen nicht.
 - Eigene Farben: nur Werte im Format `#RRGGBB` (geprüft), ausgegeben als CSS-Variablen am
   Willkommensbereich – keine freie CSS-Eingabe.
 - Icons (auch eigene) werden vor dem Ausliefern bereinigt: keine Skripte, Event-Handler,
@@ -181,6 +209,10 @@ weil die Seitenleiste auf dem Handy erst weit unten kommt. Wird der Willkommensb
 per Rollen ausgeblendet, zeigt ILIAS wieder den Seitentitel „Dashboard“.
 
 ## Update-Hinweise
+
+- **Auf 1.3.0:** neue Klasse für die Seite „Anpassen“. Nach dem Einspielen `composer dump-autoload`
+  und `php cli/setup.php build`, danach in der Plugin-Verwaltung „Aktualisieren“ und „Sprachen
+  aktualisieren“. Ohne Build führt „Anpassen“ zu einer Fehlermeldung.
 
 - ILIAS liest die Plugin-Version aus den Build-Artefakten. Eine neue Version erscheint in der
   Plugin-Verwaltung erst nach `php cli/setup.php build` – danach dort „Aktualisieren“.
