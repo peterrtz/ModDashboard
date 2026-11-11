@@ -434,6 +434,16 @@ class ilModDashboardPlugin extends ilUserInterfaceHookPlugin
     }
 
     /** @return list<string> 'favourites' und/oder 'own', soweit freigegeben und verfügbar */
+    /** Lesbarer Typname; Plugin-Typen über ihre eigene Sprachdatei, fehlt sie: „Objekt“ */
+    public static function typeName(string $type): string
+    {
+        global $DIC;
+        $tname = $DIC['component.repository']->hasPluginId($type)
+            ? ilObjectPlugin::lookupTxtById($type, 'obj_' . $type)
+            : $DIC->language()->txt('obj_' . $type);
+        return str_starts_with($tname, '-') && str_ends_with($tname, '-') ? $DIC->language()->txt('object') : $tname;
+    }
+
     public function personalParts(): array
     {
         $parts = array_values(array_intersect(['favourites', 'own'], (array) $this->conf('personal')));

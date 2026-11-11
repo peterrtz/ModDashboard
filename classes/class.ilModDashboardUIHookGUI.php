@@ -482,11 +482,7 @@ class ilModDashboardUIHookGUI extends ilUIHookPluginGUI
     /** Typname; Plugin-Typen über das Plugin, fehlende Sprachvariable → „Objekt“ */
     private function typeName(Container $dic, string $type): string
     {
-        $plugins = $dic['component.repository'];
-        $tname = $plugins->hasPluginId($type)
-            ? ilObjectPlugin::lookupTxtById($type, 'obj_' . $type)
-            : $dic->language()->txt('obj_' . $type);
-        return str_starts_with($tname, '-') && str_ends_with($tname, '-') ? $dic->language()->txt('object') : $tname;
+        return ilModDashboardPlugin::typeName($type);
     }
 
     /** Objekt-Icon; fällt auf das Komponenten-Icon zurück, wenn ein Plugin keinen gültigen Pfad liefert */
