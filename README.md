@@ -86,7 +86,7 @@ Administration → Plugins → ModDashboard → Konfigurieren
 | Wenn es nichts zum Weitermachen gibt | „Kurzen Hinweis zeigen“ (Standard) oder „Kasten ausblenden“; „Zuletzt angesehen“ bleibt in beiden Fällen |
 | Eigene Links | je Zeile `Titel \| URL \| Icon`, höchstens 4 |
 | Vollständige Icon-Bibliothek freigeben | Standard aus. An: alle rund 1.500 Phosphor-Icons (Stil „Regular“) für eigene Links, Namen wie auf [phosphoricons.com](https://phosphoricons.com) |
-| Persönliche Leiste | Favoriten und/oder eigene Links (höchstens 4) anbieten; leer = keine Leiste. Jede Person entscheidet unter „Anpassen“ selbst |
+| Persönliche Leiste | Favoriten und/oder eigene Links (höchstens 4) anbieten; leer = keine Leiste. Favoriten nur, wenn das Dashboard keinen eigenen Favoriten-Block zeigt (sonst doppelt). Jede Person entscheidet unter „Anpassen“ selbst |
 
 Beispiel für eigene Links:
 
@@ -102,6 +102,13 @@ Links ein oder aus und wählen bis zu vier Objekte aus ihren Kursen und Gruppen 
 ihren Favoriten oder zuletzt besuchten Objekten. Beim Anzeigen prüft das Plugin jedes Mal das
 Leserecht; gelöschte oder nicht mehr zugängliche Objekte verschwinden von selbst.
 Die Auswahl ist auf 300 Einträge begrenzt, damit die Seite auch in großen Kursen schnell bleibt.
+
+> **Favoriten nur freigeben, wenn das Dashboard sie nicht schon zeigt.** ILIAS hat einen eigenen
+> Favoriten-Block auf dem Dashboard. Ist er aktiv (Administration → Dashboard bzw. Favoriten),
+> stehen die Favoriten in der Leiste und direkt darunter ein zweites Mal – auf dem Handy
+> unmittelbar hintereinander. Dann in der Konfiguration nur „Eigene Links“ anbieten. Die
+> Favoriten-Option ist für Installationen gedacht, in denen der Favoriten-Block auf dem
+> Dashboard abgeschaltet ist, Favoriten aber weiter gesetzt werden können.
 
 **Datenschutz:** „Zuletzt angesehen“ zeigt die persönliche Lernhistorie groß auf der
 Startseite. Für Rollen, die ihr Dashboard im Unterricht zeigen, den Bereich abwählen
