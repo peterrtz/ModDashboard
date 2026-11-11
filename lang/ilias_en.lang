@@ -106,4 +106,4 @@ cfg_sec_personal_info#:#An extra row in the welcome area that each person sets u
 cfg_personal#:#Offer
 cfg_personal_favourites#:#Favourites (all; only if favourites are enabled for the installation)
 cfg_personal_own#:#Own links (at most %d, from objects with read access)
-cfg_personal_info#:#Without a selection there is no personal bar. Stored in the user preferences; access rights are checked on every display.
+cfg_personal_info#:#Without a selection there is no personal bar. Only offer favourites if the favourites block on the dashboard is switched off – otherwise they appear twice. Stored in the user preferences; access rights are checked on every display.
