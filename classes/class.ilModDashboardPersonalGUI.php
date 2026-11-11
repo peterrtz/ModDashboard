@@ -122,7 +122,6 @@ class ilModDashboardPersonalGUI
         $user_id = $DIC->user()->getId();
         $tree = $DIC->repositoryTree();
         $access = $DIC->access();
-        $lng = $DIC->language();
         $refs = [];
 
         // Bereits gewählte Links zuerst, damit sie auswählbar bleiben, solange der Zugriff besteht
@@ -166,11 +165,23 @@ class ilModDashboardPersonalGUI
             if (in_array($type, self::SKIP_TYPES, true) || !$access->checkAccess('read', '', $ref)) {
                 continue;
             }
-            $label = ilObject::_lookupTitle($obj) . ' (' . $lng->txt('obj_' . $type);
-            if ($container > 0 && $container !== $ref) {
+            // Ort: der Kurs bzw. die Gruppe, aus der das Objekt stammt, sonst das übergeordnete Objekt
+            if ($container <= 0 || $container === $ref) {
+                $parent = (int) $tree->getParentId($ref);
+                $container = $parent > ROOT_FOLDER_ID ? $parent : 0;
+            }
+            $label = ilObject::_lookupTitle($obj) . ' (' . ilModDashboardPlugin::typeName($type);
+            if ($container > 0) {
                 $label .= ' · ' . ilObject::_lookupTitle(ilObject::_lookupObjId($container));
             }
             $options[(string) $ref] = $label . ')';
+        }
+        // Gleich lautende Einträge (z. B. Verknüpfungen) unterscheidbar machen
+        $counts = array_count_values($options);
+        foreach ($options as $ref => $label) {
+            if ($counts[$label] > 1) {
+                $options[$ref] = $label . ' – ID ' . $ref;
+            }
         }
         asort($options, SORT_NATURAL | SORT_FLAG_CASE);
         return $options;
