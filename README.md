@@ -101,8 +101,8 @@ Leserecht; gelöschte oder nicht mehr zugängliche Objekte verschwinden von selb
 Die Auswahl ist auf 300 Einträge begrenzt, damit die Seite auch in großen Kursen schnell bleibt.
 
 > **Favoriten nur freigeben, wenn das Dashboard sie nicht schon zeigt.** ILIAS hat einen eigenen
-> Favoriten-Block auf dem Dashboard. Ist er aktiv (Administration → Dashboard bzw. Favoriten),
-> stehen die Favoriten in der Leiste und direkt darunter ein zweites Mal – auf dem Handy
+> Favoriten-Block auf dem Dashboard. Ist er aktiv (Administration → Dashboard → Einstellungen →
+> Allgemeine Einstellungen, Block „Favoriten“), stehen die Favoriten in der Leiste und direkt darunter ein zweites Mal – auf dem Handy
 > unmittelbar hintereinander. Dann in der Konfiguration nur „Eigene Links“ anbieten. Die
 > Favoriten-Option ist für Installationen gedacht, in denen der Favoriten-Block auf dem
 > Dashboard abgeschaltet ist, Favoriten aber weiter gesetzt werden können.
