@@ -47,7 +47,7 @@ cfg_q_courses#:#Meine Kurse (Sprung zum Block auf dem Dashboard)
 cfg_q_calendar#:#Kalender
 cfg_q_repository#:#Alle Kurse (Magazin)
 cfg_custom#:#Eigene Links
-cfg_custom_info#:#Eine Zeile je Link: Titel | URL | Icon (optional). Höchstens %d Links. URL relativ oder mit http(s)://. Icons: %s
+cfg_custom_info#:#Eine Zeile je Link: Titel | URL | Icon (optional). Höchstens %d Links. URL relativ oder mit http(s)://. Icons: %s.
 cfg_custom_invalid#:#Ungültige Zeile(n): %s. Format: Titel | URL | Icon
 cfg_q_progress#:#Lernfortschritt
 cfg_local_roles#:#Lokale Rollen
