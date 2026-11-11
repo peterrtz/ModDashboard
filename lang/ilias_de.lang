@@ -106,4 +106,4 @@ cfg_sec_personal_info#:#Eine zusätzliche Zeile im Willkommensbereich, die jede 
 cfg_personal#:#Angebot
 cfg_personal_favourites#:#Favoriten (alle; nur wenn Favoriten in der Installation aktiv sind)
 cfg_personal_own#:#Eigene Links (höchstens %d, aus Objekten mit Lesezugriff)
-cfg_personal_info#:#Ohne Auswahl gibt es keine persönliche Leiste. Gespeichert wird in den Nutzereinstellungen; Zugriffsrechte werden bei jeder Anzeige geprüft.
+cfg_personal_info#:#Ohne Auswahl gibt es keine persönliche Leiste. Favoriten nur anbieten, wenn der Favoriten-Block auf dem Dashboard abgeschaltet ist – sonst erscheinen sie doppelt. Gespeichert wird in den Nutzereinstellungen; Zugriffsrechte werden bei jeder Anzeige geprüft.
