@@ -11,7 +11,7 @@
 
 ![ModDashboard auf dem ILIAS-Dashboard](docs/screenshot.png)
 
-<sub>Aufnahme aus ILIAS 11.5 mit dem Standard-Skin Delos und Demo-Daten. Handy-Ansicht: [docs/mobile.png](docs/mobile.png)</sub>
+<sub>Aufnahme mit Demo-Daten im Standard-Skin Delos (Testinstanz ILIAS 12; unter ILIAS 10 und 11 identisch). Handy-Ansicht: [docs/mobile.png](docs/mobile.png)</sub>
 
 Flyer zum Weitergeben: [docs/ModDashboard-Flyer.pdf](docs/ModDashboard-Flyer.pdf)
 
