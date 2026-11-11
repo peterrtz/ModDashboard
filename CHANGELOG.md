@@ -1,5 +1,9 @@
 # Changelog
 
+## Unveröffentlicht
+
+- Konfiguration: fehlender Punkt nach der Icon-Liste bei „Eigene Links“ ergänzt.
+
 ## 1.3.0-alpha.1 (ILIAS 12) – 2026-11-10
 
 - **Weitermachen** nur noch für gewählte Objekttypen (Standard: Lernmodul, Lernsequenz, Übung, Test,
