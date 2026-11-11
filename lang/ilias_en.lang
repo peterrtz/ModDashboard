@@ -47,7 +47,7 @@ cfg_q_courses#:#My courses (jump to the dashboard block)
 cfg_q_calendar#:#Calendar
 cfg_q_repository#:#All courses (repository)
 cfg_custom#:#Custom links
-cfg_custom_info#:#One line per link: Title | URL | Icon (optional). At most %d links. URL relative or starting with http(s)://. Icons: %s
+cfg_custom_info#:#One line per link: Title | URL | Icon (optional). At most %d links. URL relative or starting with http(s)://. Icons: %s.
 cfg_custom_invalid#:#Invalid line(s): %s. Format: Title | URL | Icon
 cfg_q_progress#:#Learning progress
 cfg_local_roles#:#Local roles
